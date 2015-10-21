@@ -11,8 +11,8 @@ public class CommitmentDTO {
 
     private Integer id;
     private String role;
-    private LocalDate startDate;
-    private LocalDate endDate;
+    private LocalDate fromDate;
+    private LocalDate toDate;
     private Resident resident;
     private Boolean authorized;
 
@@ -32,20 +32,20 @@ public class CommitmentDTO {
         this.role = role;
     }
 
-    public LocalDate getStartDate() {
-        return startDate;
+    public LocalDate getFromDate() {
+        return fromDate;
     }
 
-    public void setStartDate(LocalDate startDate) {
-        this.startDate = startDate;
+    public void setFromDate(LocalDate startDate) {
+        this.fromDate = startDate;
     }
 
-    public LocalDate getEndDate() {
-        return endDate;
+    public LocalDate getToDate() {
+        return toDate;
     }
 
-    public void setEndDate(LocalDate endDate) {
-        this.endDate = endDate;
+    public void setToDate(LocalDate endDate) {
+        this.toDate = endDate;
     }
 
     public Resident getResident() {

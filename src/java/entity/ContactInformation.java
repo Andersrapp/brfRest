@@ -22,10 +22,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Table(name = "contactinformation")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Contactinformation.findAll", query = "SELECT c FROM ContactInformation c"),
-    @NamedQuery(name = "Contactinformation.findById", query = "SELECT c FROM ContactInformation c WHERE c.id = :id"),
-    @NamedQuery(name = "Contactinformation.findByTelephone", query = "SELECT c FROM ContactInformation c WHERE c.telephone = :telephone"),
-    @NamedQuery(name = "Contactinformation.findByEmail", query = "SELECT c FROM ContactInformation c WHERE c.email = :email"),
+    @NamedQuery(name = "ContactInformation.findAll", query = "SELECT c FROM ContactInformation c"),
+    @NamedQuery(name = "ContactInformation.findById", query = "SELECT c FROM ContactInformation c WHERE c.id = :id"),
+    @NamedQuery(name = "ContactInformation.findByTelephone", query = "SELECT c FROM ContactInformation c WHERE c.telephone = :telephone"),
+    @NamedQuery(name = "ContactInformation.findByEmail", query = "SELECT c FROM ContactInformation c WHERE c.email = :email"),
     @NamedQuery(name = "ContactInformaion.findResidentContactInformation",
             query = "SELECT c FROM ContactInformation c WHERE c.resident.id = :residentId")
 })

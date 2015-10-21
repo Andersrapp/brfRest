@@ -1,7 +1,9 @@
 package entity;
 
 import java.io.Serializable;
+import java.util.List;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -11,8 +13,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -26,9 +31,9 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Apartment.findById", query = "SELECT a FROM Apartment a WHERE a.id = :id"),
     @NamedQuery(name = "Apartment.findByApartmentNumber", query = "SELECT a FROM Apartment a WHERE a.apartmentNumber = :apartmentNumber"),
     @NamedQuery(name = "Apartment.findByRoomCount", query = "SELECT a FROM Apartment a WHERE a.roomCount = :roomCount"),
-    @NamedQuery(name = "Apartment.findByShare", query = "SELECT a FROM Apartment a WHERE a.share = :share"),
-    @NamedQuery(name = "Apartment.findByAreaSqm", query = "SELECT a FROM Apartment a WHERE a.areaSqm = :areaSqm"),
-    @NamedQuery(name = "Apartment.findByFloorCode", query = "SELECT a FROM Apartment a WHERE a.floorCode = :floorCode")})
+    @NamedQuery(name = "Apartment.findByArea", query = "SELECT a FROM Apartment a WHERE a.area = :area"),
+    @NamedQuery(name = "Apartment.findByFloorCode", query = "SELECT a FROM Apartment a WHERE a.floorCode = :floorCode"),
+    @NamedQuery(name = "Apartment.findByShare", query = "SELECT a FROM Apartment a WHERE a.share = :share")})
 public class Apartment implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
@@ -36,17 +41,23 @@ public class Apartment implements Serializable {
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
+    @Basic(optional = false)
+    @NotNull
     @Column(name = "apartmentNumber")
-    private Integer apartmentNumber;
+    private int apartmentNumber;
     @Column(name = "roomCount")
     private Integer roomCount;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "area")
+    private int area;
+    @Column(name = "floorCode")
+    private Integer floorCode;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Column(name = "share")
     private Float share;
-    @Column(name = "area_sqm")
-    private Integer areaSqm;
-    @Column(name = "floorCode")
-    private Integer floorCode;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "apartment")
+    private List<Residency> residencyList;
     @JoinColumn(name = "address", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Address address;
@@ -58,6 +69,12 @@ public class Apartment implements Serializable {
         this.id = id;
     }
 
+    public Apartment(Integer id, int apartmentNumber, int area) {
+        this.id = id;
+        this.apartmentNumber = apartmentNumber;
+        this.area = area;
+    }
+
     public Integer getId() {
         return id;
     }
@@ -66,11 +83,11 @@ public class Apartment implements Serializable {
         this.id = id;
     }
 
-    public Integer getApartmentNumber() {
+    public int getApartmentNumber() {
         return apartmentNumber;
     }
 
-    public void setApartmentNumber(Integer apartmentNumber) {
+    public void setApartmentNumber(int apartmentNumber) {
         this.apartmentNumber = apartmentNumber;
     }
 
@@ -82,20 +99,12 @@ public class Apartment implements Serializable {
         this.roomCount = roomCount;
     }
 
-    public Float getShare() {
-        return share;
+    public int getArea() {
+        return area;
     }
 
-    public void setShare(Float share) {
-        this.share = share;
-    }
-
-    public Integer getAreaSqm() {
-        return areaSqm;
-    }
-
-    public void setAreaSqm(Integer areaSqm) {
-        this.areaSqm = areaSqm;
+    public void setArea(int area) {
+        this.area = area;
     }
 
     public Integer getFloorCode() {
@@ -104,6 +113,23 @@ public class Apartment implements Serializable {
 
     public void setFloorCode(Integer floorCode) {
         this.floorCode = floorCode;
+    }
+
+    public Float getShare() {
+        return share;
+    }
+
+    public void setShare(Float share) {
+        this.share = share;
+    }
+
+    @XmlTransient
+    public List<Residency> getResidencyList() {
+        return residencyList;
+    }
+
+    public void setResidencyList(List<Residency> residencyList) {
+        this.residencyList = residencyList;
     }
 
     public Address getAddress() {

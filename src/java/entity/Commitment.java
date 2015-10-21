@@ -30,8 +30,8 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Commitment.findAll", query = "SELECT c FROM Commitment c"),
     @NamedQuery(name = "Commitment.findById", query = "SELECT c FROM Commitment c WHERE c.id = :id"),
     @NamedQuery(name = "Commitment.findByRole", query = "SELECT c FROM Commitment c WHERE c.role = :role"),
-    @NamedQuery(name = "Commitment.findByEntryDate", query = "SELECT c FROM Commitment c WHERE c.entryDate = :entryDate"),
-    @NamedQuery(name = "Commitment.findByExitDate", query = "SELECT c FROM Commitment c WHERE c.exitDate = :exitDate"),
+    @NamedQuery(name = "Commitment.findByFromDate", query = "SELECT c FROM Commitment c WHERE c.fromDate = :fromDate"),
+    @NamedQuery(name = "Commitment.findByToDate", query = "SELECT c FROM Commitment c WHERE c.toDate = :toDate"),
     @NamedQuery(name = "Commitment.findByAuthorized", query = "SELECT c FROM Commitment c WHERE c.authorized = :authorized"),
     @NamedQuery(name = "Commitment.findResidentCommitments",
             query = "SELECT c FROM Commitment c WHERE c.resident.id = :residentId")
@@ -51,16 +51,16 @@ public class Commitment implements Serializable {
     private String role;
     @Basic(optional = false)
     @NotNull
-    @Column(name = "entryDate")
+    @Column(name = "fromDate")
     @Temporal(TemporalType.DATE)
-    private Date entryDate;
-    @Column(name = "exitDate")
+    private Date fromDate;
+    @Column(name = "toDate")
     @Temporal(TemporalType.DATE)
-    private Date exitDate;
+    private Date toDate;
     @Basic(optional = false)
     @NotNull
     @Column(name = "authorized")
-    private Boolean authorized;
+    private boolean authorized;
     @JoinColumn(name = "resident", referencedColumnName = "id")
     @ManyToOne
     private Resident resident;
@@ -72,10 +72,10 @@ public class Commitment implements Serializable {
         this.id = id;
     }
 
-    public Commitment(Integer id, String role, Date entryDate, Boolean authorized) {
+    public Commitment(Integer id, String role, Date fromDate, boolean authorized) {
         this.id = id;
         this.role = role;
-        this.entryDate = entryDate;
+        this.fromDate = fromDate;
         this.authorized = authorized;
     }
 
@@ -95,27 +95,27 @@ public class Commitment implements Serializable {
         this.role = role;
     }
 
-    public Date getEntryDate() {
-        return entryDate;
+    public Date getFromDate() {
+        return fromDate;
     }
 
-    public void setEntryDate(Date entryDate) {
-        this.entryDate = entryDate;
+    public void setFromDate(Date fromDate) {
+        this.fromDate = fromDate;
     }
 
-    public Date getExitDate() {
-        return exitDate;
+    public Date getToDate() {
+        return toDate;
     }
 
-    public void setExitDate(Date exitDate) {
-        this.exitDate = exitDate;
+    public void setToDate(Date toDate) {
+        this.toDate = toDate;
     }
 
-    public Boolean getAuthorized() {
+    public boolean getAuthorized() {
         return authorized;
     }
 
-    public void setAuthorized(Boolean authorized) {
+    public void setAuthorized(boolean authorized) {
         this.authorized = authorized;
     }
 
@@ -149,7 +149,7 @@ public class Commitment implements Serializable {
 
     @Override
     public String toString() {
-        return "entities.Commitment[ id=" + id + " ]";
+        return "entity.Commitment[ id=" + id + " ]";
     }
 
 }

@@ -46,8 +46,8 @@ public class Utility {
         commitmentDTO.setId(commitment.getId());
         commitmentDTO.setRole(commitment.getRole());
         commitmentDTO.setResident(commitment.getResident());
-        commitmentDTO.setStartDate(convertDateToLocalDate(commitment.getEntryDate()));
-        commitmentDTO.setEndDate(convertDateToLocalDate(commitment.getExitDate()));
+        commitmentDTO.setFromDate(convertDateToLocalDate(commitment.getFromDate()));
+        commitmentDTO.setToDate(convertDateToLocalDate(commitment.getToDate()));
         commitmentDTO.setAuthorized(commitment.getAuthorized());
         return commitmentDTO;
     }

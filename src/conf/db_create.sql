@@ -9,8 +9,7 @@ streetNumber VARCHAR(5)
 CREATE TABLE ContactInformation(
 id INTEGER PRIMARY KEY AUTO_INCREMENT,
 telephone VARCHAR(30),
-email VARCHAR(50),
-CONSTRAINT fk_contactinformation_alternateaddress FOREIGN KEY(alternateAddress) REFERENCES Address(id)
+email VARCHAR(50)
 );
 
 CREATE TABLE Apartment(
@@ -18,9 +17,9 @@ id INTEGER PRIMARY KEY AUTO_INCREMENT,
 apartmentNumber INTEGER NOT NULL UNIQUE,
 address INTEGER NOT NULL,
 roomCount INTEGER,
-area_sqm INTEGER NOT NULL,
+area INTEGER NOT NULL,
 floorCode INTEGER,
-share FLOAT
+share FLOAT,
 CONSTRAINT fk_apartment_address FOREIGN KEY(address) REFERENCES Address(id)
 );
 
@@ -47,8 +46,8 @@ CREATE TABLE Commitment(
 id INTEGER PRIMARY KEY AUTO_INCREMENT,
 role ENUM('member', 'chairman', 'cashier', 'secretary', 'deputy') NOT NULL,
 resident INTEGER, 
-entryDate DATE NOT NULL,
-exitDate DATE,
+fromDate DATE NOT NULL,
+toDate DATE,
 authorized BOOLEAN NOT NULL,
 CONSTRAINT fk_commitment_resident FOREIGN KEY (resident) REFERENCES Resident(id)
 );

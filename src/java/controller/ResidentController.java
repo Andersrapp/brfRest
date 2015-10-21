@@ -176,8 +176,8 @@ public class ResidentController {
 
         commitment.setResident(residentFacade.find(residentId));
         commitment.setRole(role);
-        commitment.setEntryDate(Utility.parseStringToDate(startDate));
-        commitment.setExitDate(Utility.parseStringToDate(endDate));
+        commitment.setFromDate(Utility.parseStringToDate(startDate));
+        commitment.setToDate(Utility.parseStringToDate(endDate));
         commitment.setAuthorized(authorized);
         commitmentFacade.create(commitment);
     }
@@ -196,8 +196,8 @@ public class ResidentController {
         Commitment commitment = commitmentFacade.find(commitmentId);
         commitment.setResident(residentFacade.find(residentId));
         commitment.setRole(role);
-        commitment.setEntryDate(Utility.parseStringToDate(startDate));
-        commitment.setExitDate(Utility.parseStringToDate(endDate));
+        commitment.setFromDate(Utility.parseStringToDate(startDate));
+        commitment.setToDate(Utility.parseStringToDate(endDate));
         commitment.setAuthorized(authorized);
         commitmentFacade.edit(commitment);
     }

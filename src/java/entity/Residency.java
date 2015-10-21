@@ -1,8 +1,6 @@
 package entity;
 
 import java.io.Serializable;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -86,9 +84,7 @@ public class Residency implements Serializable {
     }
 
     public Date getFromDate() {
-//        return fromDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
         return fromDate;
-
     }
 
     public void setFromDate(Date fromDate) {
@@ -96,9 +92,7 @@ public class Residency implements Serializable {
     }
 
     public Date getToDate() {
-//        return toDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
         return toDate;
-
     }
 
     public void setToDate(Date toDate) {
@@ -143,7 +137,7 @@ public class Residency implements Serializable {
 
     @Override
     public String toString() {
-        return "entities.Residency[ id=" + id + " ]";
+        return "entity.Residency[ id=" + id + " ]";
     }
 
 }

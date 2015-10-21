@@ -62,7 +62,7 @@ public class ApartmentController {
     public void createApartment(
             @FormParam("apartmentNumber") int apartmentNumber,
             @FormParam("addressId") int addressId,
-            @FormParam("areasqm") int areasqm,
+            @FormParam("area") int area,
             @FormParam("floorCode") int floorCode,
             @FormParam("roomCount") int roomCount,
             @FormParam("share") float share
@@ -71,7 +71,7 @@ public class ApartmentController {
         apartment.setApartmentNumber(apartmentNumber);
         Address address = addressFacade.find(addressId);
         apartment.setAddress(address);
-        apartment.setAreaSqm(areasqm);
+        apartment.setArea(area);
         apartment.setFloorCode(floorCode);
         apartment.setRoomCount(roomCount);
         apartment.setShare(share);
@@ -87,7 +87,7 @@ public class ApartmentController {
             @FormParam("addressId") int addressId,
             @FormParam("roomCount") int roomCount,
             @FormParam("share") float share,
-            @FormParam("areasqm") int areasqm,
+            @FormParam("area") int area,
             @FormParam("floorCode") int floorCode
     ) {
         Apartment apartment = apartmentFacade.find(apartmentId);
@@ -96,7 +96,7 @@ public class ApartmentController {
         apartment.setAddress(address);
         apartment.setRoomCount(roomCount);
         apartment.setShare(share);
-        apartment.setAreaSqm(areasqm);
+        apartment.setArea(area);
         apartment.setFloorCode(floorCode);
         apartmentFacade.edit(apartment);
         return Response.ok(apartment).build();

@@ -1,7 +1,9 @@
 package entity;
 
 import java.io.Serializable;
+import java.util.List;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -9,10 +11,11 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -27,8 +30,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Address.findByCountry", query = "SELECT a FROM Address a WHERE a.country = :country"),
     @NamedQuery(name = "Address.findByCity", query = "SELECT a FROM Address a WHERE a.city = :city"),
     @NamedQuery(name = "Address.findByStreetName", query = "SELECT a FROM Address a WHERE a.streetName = :streetName"),
-    @NamedQuery(name = "Address.findByStreetNumber", query = "SELECT a FROM Address a WHERE a.streetNumber = :streetNumber"),
-    @NamedQuery(name = "Address.findByStreetLetter", query = "SELECT a FROM Address a WHERE a.streetLetter = :streetLetter")})
+    @NamedQuery(name = "Address.findByStreetNumber", query = "SELECT a FROM Address a WHERE a.streetNumber = :streetNumber")})
 public class Address implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
@@ -45,10 +47,11 @@ public class Address implements Serializable {
     @Size(max = 50)
     @Column(name = "streetName")
     private String streetName;
+    @Size(max = 5)
     @Column(name = "streetNumber")
-    private Integer streetNumber;
-    @Column(name = "streetLetter")
-    private Character streetLetter;
+    private String streetNumber;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "address")
+    private List<Apartment> apartmentList;
 
     public Address() {
     }
@@ -89,20 +92,21 @@ public class Address implements Serializable {
         this.streetName = streetName;
     }
 
-    public Integer getStreetNumber() {
+    public String getStreetNumber() {
         return streetNumber;
     }
 
-    public void setStreetNumber(Integer streetNumber) {
+    public void setStreetNumber(String streetNumber) {
         this.streetNumber = streetNumber;
     }
 
-    public Character getStreetLetter() {
-        return streetLetter;
+    @XmlTransient
+    public List<Apartment> getApartmentList() {
+        return apartmentList;
     }
 
-    public void setStreetLetter(Character streetLetter) {
-        this.streetLetter = streetLetter;
+    public void setApartmentList(List<Apartment> apartmentList) {
+        this.apartmentList = apartmentList;
     }
 
     @Override

@@ -33,7 +33,6 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Resident.findByFirstName", query = "SELECT r FROM Resident r WHERE r.firstName = :firstName"),
     @NamedQuery(name = "Resident.findByLastName", query = "SELECT r FROM Resident r WHERE r.lastName = :lastName")})
 public class Resident implements Serializable {
-
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -49,10 +48,12 @@ public class Resident implements Serializable {
     @Size(max = 20)
     @Column(name = "lastName")
     private String lastName;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "resident")
+    private List<Residency> residencyList;
     @OneToMany(mappedBy = "resident")
     private List<Commitment> commitmentList;
     @JoinColumn(name = "contactInformation", referencedColumnName = "id")
-    @OneToOne(cascade = CascadeType.PERSIST)
+    @OneToOne
     private ContactInformation contactInformation;
 
     public Resident() {
@@ -92,6 +93,15 @@ public class Resident implements Serializable {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    @XmlTransient
+    public List<Residency> getResidencyList() {
+        return residencyList;
+    }
+
+    public void setResidencyList(List<Residency> residencyList) {
+        this.residencyList = residencyList;
     }
 
     @XmlTransient
@@ -135,5 +145,5 @@ public class Resident implements Serializable {
     public String toString() {
         return "entity.Resident[ id=" + id + " ]";
     }
-
+    
 }
