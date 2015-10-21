@@ -141,14 +141,18 @@ public class ApartmentController {
     public void createResidency(
             @PathParam("apartmentId") int apartmentId,
             @FormParam("residentId") int residentId,
-            @FormParam("movedInDate") String inDate,
-            @FormParam("movedOutDate") String outDate
+            @FormParam("fromDate") String inDate,
+            @FormParam("toDate") String outDate
     ) {
         Residency residency = new Residency();
         residency.setApartment(apartmentFacade.find(apartmentId));
         residency.setResident(residentFacade.find(residentId));
         residency.setFromDate(Utility.parseStringToDate(inDate));
-        residency.setToDate(Utility.parseStringToDate(outDate));
+        if (outDate != null) {
+            residency.setToDate(Utility.parseStringToDate(outDate));
+        } else {
+            residency.setToDate(null);
+        }
         residencyFacade.create(residency);
     }
 
@@ -159,17 +163,21 @@ public class ApartmentController {
             @PathParam("apartmentId") int apartmentId,
             @PathParam("residencyId") int residencyId,
             @FormParam("residentId") int residentId,
-            @FormParam("movedInDate") String inDate,
-            @FormParam("movedOutDate") String outDate
+            @FormParam("fromDate") String inDate,
+            @FormParam("toDate") String outDate
     ) {
         Residency residency = residencyFacade.find(residencyId);
         residency.setApartment(apartmentFacade.find(apartmentId));
         residency.setResident(residentFacade.find(residentId));
         residency.setFromDate(Utility.parseStringToDate(inDate));
-        residency.setToDate(Utility.parseStringToDate(outDate));
+        if (outDate != null) {
+            residency.setToDate(Utility.parseStringToDate(outDate));
+        } else {
+            residency.setToDate(null);
+        }
 
         residencyFacade.edit(residency);
-        return Response.ok(residency).build();
+        return Response.ok(Utility.convertResidencyToDTO(residency)).build();
     }
 
     @DELETE
@@ -188,5 +196,4 @@ public class ApartmentController {
 //    @Path("{apartmendId: \\d+}/address")
 //    public Response createApartmentAddress() {
 //    }
-
 }

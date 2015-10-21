@@ -168,17 +168,17 @@ public class ResidentController {
     public void createCommitment(
             @PathParam("residentId") int residentId,
             @FormParam("role") String role,
-            @FormParam("startDate") String startDate,
-            @FormParam("endDate") String endDate,
-            @FormParam("authorized") boolean authorized
+            @FormParam("fromDate") String fromDate,
+            @FormParam("toDate") String toDate,
+            @FormParam("authorized") String authorized
     ) {
         Commitment commitment = new Commitment();
 
         commitment.setResident(residentFacade.find(residentId));
         commitment.setRole(role);
-        commitment.setFromDate(Utility.parseStringToDate(startDate));
-        commitment.setToDate(Utility.parseStringToDate(endDate));
-        commitment.setAuthorized(authorized);
+        commitment.setFromDate(Utility.parseStringToDate(fromDate));
+        commitment.setToDate(Utility.parseStringToDate(toDate));
+        commitment.setAuthorized("true".equals(authorized) ? true : false);
         commitmentFacade.create(commitment);
     }
 

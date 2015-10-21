@@ -76,8 +76,6 @@ public class AddressController {
         address.setCity(city);
         address.setStreetName(streetName);
         address.setStreetNumber(streetNumber);
-//        List<Apartment> addressApartments = new ArrayList<>();
-//        address.setApartmentList(addressApartments);
         addressFacade.edit(address);
     }
 
