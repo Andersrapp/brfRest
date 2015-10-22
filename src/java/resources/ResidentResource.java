@@ -1,11 +1,11 @@
-package controller;
+package resources;
 
-import dto.CommitmentDTO;
-import dto.ResidencyDTO;
-import entity.Commitment;
-import entity.ContactInformation;
-import entity.Residency;
-import entity.Resident;
+import dtos.CommitmentDTO;
+import dtos.ResidencyDTO;
+import entities.Commitment;
+import entities.ContactInformation;
+import entities.Residency;
+import entities.Resident;
 import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.EJB;
@@ -23,12 +23,12 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-import service.AddressFacadeLocal;
-import service.ApartmentFacadeLocal;
-import service.CommitmentFacadeLocal;
-import service.ContactInformationFacadeLocal;
-import service.ResidencyFacadeLocal;
-import service.ResidentFacadeLocal;
+import services.AddressFacadeLocal;
+import services.ApartmentFacadeLocal;
+import services.CommitmentFacadeLocal;
+import services.ContactInformationFacadeLocal;
+import services.ResidencyFacadeLocal;
+import services.ResidentFacadeLocal;
 import utilities.Utility;
 
 /**
@@ -299,5 +299,4 @@ public class ResidentResource {
         Commitment commitment = commitmentFacade.findOneResidentCommitment(residentId, commitmentId);
         commitmentFacade.remove(commitment);
     }
-
 }

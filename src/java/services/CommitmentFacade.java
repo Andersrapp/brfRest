@@ -1,6 +1,6 @@
-package service;
+package services;
 
-import entity.Commitment;
+import entities.Commitment;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;

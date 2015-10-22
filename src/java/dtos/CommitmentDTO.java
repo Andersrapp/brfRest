@@ -1,19 +1,20 @@
-package dto;
+package dtos;
 
+import entities.Resident;
 import java.time.LocalDate;
 
 /**
  *
  * @author Anders
  */
-public class CommitmentDTO2 {
+public class CommitmentDTO {
 
     private Integer id;
     private String role;
     private LocalDate fromDate;
     private LocalDate toDate;
-    private int residentId;
-    private boolean authorized;
+    private Resident resident;
+    private Boolean authorized;
 
     public Integer getId() {
         return id;
@@ -47,19 +48,20 @@ public class CommitmentDTO2 {
         this.toDate = endDate;
     }
 
-    public int getResidentId() {
-        return residentId;
+    public Resident getResident() {
+        return resident;
     }
 
-    public void setResidentId(int residentId) {
-        this.residentId = residentId;
+    public void setResident(Resident resident) {
+        this.resident = resident;
     }
 
-    public boolean isAuthorized() {
+    public Boolean getAuthorized() {
         return authorized;
     }
 
-    public void setAuthorized(boolean authorized) {
+    public void setAuthorized(Boolean authorized) {
         this.authorized = authorized;
     }
+
 }

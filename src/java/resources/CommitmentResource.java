@@ -1,7 +1,7 @@
-package controller;
+package resources;
 
-import dto.CommitmentDTO;
-import entity.Commitment;
+import dtos.CommitmentDTO;
+import entities.Commitment;
 import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.EJB;
@@ -17,8 +17,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import service.CommitmentFacadeLocal;
-import service.ResidentFacadeLocal;
+import services.CommitmentFacadeLocal;
+import services.ResidentFacadeLocal;
 import utilities.Utility;
 
 /**

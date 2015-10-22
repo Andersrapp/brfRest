@@ -1,9 +1,9 @@
 package utilities;
 
-import dto.CommitmentDTO;
-import dto.ResidencyDTO;
-import entity.Commitment;
-import entity.Residency;
+import dtos.CommitmentDTO;
+import dtos.ResidencyDTO;
+import entities.Commitment;
+import entities.Residency;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;

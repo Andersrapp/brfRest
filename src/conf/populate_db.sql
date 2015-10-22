@@ -31,11 +31,13 @@ VALUES("+46703305805", "anders.rapp@gmail.com");
 INSERT INTO ContactInformation(telephone, email)
 VALUES("+46706893068", "kristina.rapp@gmail.com");
 
+INSERT INTO ContactInformation(telephone, email)
+VALUES("+1 8547452321", "james.hetfield@metallica.com");
+
 -- INSERT INTO ContactInformation(telephone, email)
 -- VALUES("+46703305805", "anders.rapp@gmail.com");
--- 
--- INSERT INTO ContactInformation(telephone, email)
--- VALUES("+46703305805", "anders.rapp@gmail.com");
+
+
 
 
 

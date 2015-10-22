@@ -1,6 +1,6 @@
-package service;
+package services;
 
-import entity.ContactInformation;
+import entities.ContactInformation;
 import java.util.List;
 import javax.ejb.Local;
 

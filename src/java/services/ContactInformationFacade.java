@@ -1,6 +1,6 @@
-package service;
+package services;
 
-import entity.ContactInformation;
+import entities.ContactInformation;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;

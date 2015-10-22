@@ -1,6 +1,6 @@
-package service;
+package services;
 
-import entity.Residency;
+import entities.Residency;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;

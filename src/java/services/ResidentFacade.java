@@ -1,6 +1,6 @@
-package service;
+package services;
 
-import entity.Apartment;
+import entities.Resident;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -10,7 +10,7 @@ import javax.persistence.PersistenceContext;
  * @author Anders
  */
 @Stateless
-public class ApartmentFacade extends AbstractFacade<Apartment> implements ApartmentFacadeLocal {
+public class ResidentFacade extends AbstractFacade<Resident> implements ResidentFacadeLocal {
     @PersistenceContext(unitName = "BrfRESTPU")
     private EntityManager em;
 
@@ -19,8 +19,8 @@ public class ApartmentFacade extends AbstractFacade<Apartment> implements Apartm
         return em;
     }
 
-    public ApartmentFacade() {
-        super(Apartment.class);
+    public ResidentFacade() {
+        super(Resident.class);
     }
     
 }

@@ -1,9 +1,9 @@
-package controller;
+package resources;
 
-import dto.ResidencyDTO;
-import entity.Address;
-import entity.Apartment;
-import entity.Residency;
+import dtos.ResidencyDTO;
+import entities.Address;
+import entities.Apartment;
+import entities.Residency;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,10 +21,10 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-import service.AddressFacadeLocal;
-import service.ApartmentFacadeLocal;
-import service.ResidencyFacadeLocal;
-import service.ResidentFacadeLocal;
+import services.AddressFacadeLocal;
+import services.ApartmentFacadeLocal;
+import services.ResidencyFacadeLocal;
+import services.ResidentFacadeLocal;
 import utilities.Utility;
 
 /**

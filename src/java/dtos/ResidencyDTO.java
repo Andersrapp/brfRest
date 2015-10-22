@@ -1,7 +1,7 @@
-package dto;
+package dtos;
 
-import entity.Apartment;
-import entity.Resident;
+import entities.Apartment;
+import entities.Resident;
 import java.time.LocalDate;
 
 /**

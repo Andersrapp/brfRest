@@ -1,7 +1,7 @@
-package controller;
+package resources;
 
-import entity.Address;
-import entity.Apartment;
+import entities.Address;
+import entities.Apartment;
 import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.EJB;
@@ -14,7 +14,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import service.AddressFacadeLocal;
+import services.AddressFacadeLocal;
 
 /**
  *

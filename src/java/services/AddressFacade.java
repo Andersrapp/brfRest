@@ -1,6 +1,6 @@
-package service;
+package services;
 
-import entity.Address;
+import entities.Address;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
