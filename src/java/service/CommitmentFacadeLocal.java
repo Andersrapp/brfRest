@@ -11,9 +11,9 @@ import javax.ejb.Local;
 @Local
 public interface CommitmentFacadeLocal {
 
-    void create(Commitment commitment);
+    Commitment create(Commitment commitment);
 
-    void edit(Commitment commitment);
+    Commitment edit(Commitment commitment);
 
     void remove(Commitment commitment);
 

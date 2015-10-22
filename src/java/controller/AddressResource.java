@@ -21,7 +21,7 @@ import service.AddressFacadeLocal;
  * @author Anders
  */
 @Path("addresses")
-public class AddressController {
+public class AddressResource {
 
     @EJB
     AddressFacadeLocal addressFacade;

@@ -22,6 +22,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 import service.AddressFacadeLocal;
 import service.ApartmentFacadeLocal;
 import service.CommitmentFacadeLocal;
@@ -35,7 +36,7 @@ import utilities.Utility;
  * @author Anders
  */
 @Path("residents")
-public class ResidentController {
+public class ResidentResource {
 
     @EJB
     ApartmentFacadeLocal apartmentFacade;
@@ -77,7 +78,8 @@ public class ResidentController {
             //            @FormParam("ssn") String ssn,
             //            @FormParam("firstName") String firstName,
             //            @FormParam("lastName") String lastName
-            Resident resident
+            Resident resident,
+            @Context UriInfo info
     ) {
 //        if (ssn == null) {
 //            return Response.status(Response.Status.BAD_REQUEST)
@@ -89,7 +91,7 @@ public class ResidentController {
 //        resident.setSsn(ssn);
 //        resident.setFirstName(firstName);
 //        resident.setLastName(lastName);
-        residentFacade.create(resident);
+        resident = residentFacade.create(resident);
         return Response.ok(resident, "application/json").build();
     }
 
@@ -152,90 +154,6 @@ public class ResidentController {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("{residentId: \\d+}/commitments")
-    public List<CommitmentDTO> getCommitmentsByResident(@PathParam("residentId") int residentId) {
-        List<Commitment> residentCommitments = commitmentFacade.findResidentCommitments(residentId);
-        List<CommitmentDTO> commitmentDTOs = new ArrayList<>();
-        for (Commitment c : residentCommitments) {
-            commitmentDTOs.add(Utility.convertCommitmentToDTO(c));
-        }
-        return commitmentDTOs;
-    }
-
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("{residentId: \\d+}/commitments/{commitmentId: \\d+}")
-    public Response getResidentCommitmentById(
-            @PathParam("residentId") int residentId,
-            @PathParam("commitmentId") int commitmentId
-    ) {
-        Commitment commitment = commitmentFacade.findOneResidentCommitment(residentId, commitmentId);
-        CommitmentDTO commitmentDTO = Utility.convertCommitmentToDTO(commitment);
-        return Response.ok(commitmentDTO).build();
-    }
-
-    @POST
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("{residentId: \\d+}/commitments")
-    public void createCommitment(
-            @PathParam("residentId") int residentId,
-            //            CommitmentDTO2 com
-            @FormParam("role") String role,
-            @FormParam("fromDate") String fromDate,
-            @FormParam("toDate") String toDate,
-            @FormParam("authorized") String authorized,
-            
-            @Context HttpHeaders headers
-    ) {
-        Commitment commitment = new Commitment();
-
-        commitment.setResident(residentFacade.find(residentId));
-        commitment.setRole(role);
-        commitment.setFromDate(Utility.parseStringToDate(fromDate));
-        commitment.setToDate(Utility.parseStringToDate(toDate));
-//        commitment.setFromDate(Date.from(com.getFromDate().atStartOfDay(ZoneId.systemDefault()).toInstant()));
-//        commitment.setToDate(Date.from(com.getToDate().atStartOfDay(ZoneId.systemDefault()).toInstant()));
-        if ("true".equals(authorized)) {
-            commitment.setAuthorized(true);
-        }
-
-        commitmentFacade.create(commitment);
-    }
-
-    @PUT
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("{residentId: \\d+}/commitments/{commitmentId: \\d+}")
-    public void updateCommitment(
-            @PathParam("residentId") int residentId,
-            @PathParam("commitmentId") int commitmentId,
-            @FormParam("role") String role,
-            @FormParam("startDate") String startDate,
-            @FormParam("endDate") String endDate,
-            @FormParam("authorized") boolean authorized
-    ) {
-        Commitment commitment = commitmentFacade.find(commitmentId);
-        commitment.setResident(residentFacade.find(residentId));
-        commitment.setRole(role);
-        commitment.setFromDate(Utility.parseStringToDate(startDate));
-        commitment.setToDate(Utility.parseStringToDate(endDate));
-        commitment.setAuthorized(authorized);
-        commitmentFacade.edit(commitment);
-    }
-
-    @DELETE
-    @Path("{residentId: \\d+}/commitments/{commitmentId: \\d+}")
-    public void deleteCommitment(
-            @PathParam("residentId") int residentId,
-            @PathParam("commitmentId") int commitmentId
-    ) {
-        Commitment commitment = commitmentFacade.findOneResidentCommitment(residentId, commitmentId);
-        commitmentFacade.remove(commitment);
-    }
-
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
     @Path("{residentId: \\d+}/contactinformation")
     public Response getResidentContactInformation(
             @PathParam("residentId") int residentId
@@ -291,6 +209,95 @@ public class ResidentController {
         ContactInformation contactInformation
                 = contactInformationFacade.findResidentContactinformation(residentId);
         contactInformationFacade.remove(contactInformation);
+    }
+
+//    @Path("{residentId: \\d+}/commitments")
+//    @Consumes(MediaType.APPLICATION_JSON)
+//    public CommitmentResource getCommitmentResource() {
+//        return new CommitmentResource();
+//    }
+    @GET
+    @Path("{residentId: \\d+}/commitments")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<CommitmentDTO> getCommitmentsByResident(@PathParam("residentId") int residentId) {
+        List<Commitment> residentCommitments = new ArrayList<>();
+        residentCommitments = commitmentFacade.findResidentCommitments(residentId);
+        List<CommitmentDTO> commitmentDTOs = new ArrayList<>();
+        residentCommitments.stream().forEach((c) -> {
+            commitmentDTOs.add(Utility.convertCommitmentToDTO(c));
+        });
+        return commitmentDTOs;
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("{residentId: \\d+}/commitments/{commitmentId: \\d+}")
+    public Response getResidentCommitmentById(
+            @PathParam("residentId") int residentId,
+            @PathParam("commitmentId") int commitmentId
+    ) {
+        Commitment commitment = commitmentFacade.findOneResidentCommitment(residentId, commitmentId);
+        CommitmentDTO commitmentDTO = Utility.convertCommitmentToDTO(commitment);
+        return Response.ok(commitmentDTO).build();
+    }
+
+    @POST
+    @Path("{residentId: \\d+}/commitments")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces(MediaType.APPLICATION_JSON)
+    public void createCommitment(
+            @PathParam("residentId") int residentId,
+            //            CommitmentDTO2 com
+            @FormParam("role") String role,
+            @FormParam("fromDate") String fromDate,
+            @FormParam("toDate") String toDate,
+            @FormParam("authorized") String authorized,
+            @Context HttpHeaders headers
+    ) {
+        Commitment commitment = new Commitment();
+
+        commitment.setResident(residentFacade.find(residentId));
+        commitment.setRole(role);
+        commitment.setFromDate(Utility.parseStringToDate(fromDate));
+        commitment.setToDate(Utility.parseStringToDate(toDate));
+//        commitment.setFromDate(Date.from(com.getFromDate().atStartOfDay(ZoneId.systemDefault()).toInstant()));
+//        commitment.setToDate(Date.from(com.getToDate().atStartOfDay(ZoneId.systemDefault()).toInstant()));
+        if ("true".equals(authorized)) {
+            commitment.setAuthorized(true);
+        }
+
+        commitmentFacade.create(commitment);
+    }
+
+    @PUT
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("{residentId: \\d+}/commitments/{commitmentId: \\d+}")
+    public void updateCommitment(
+            @PathParam("residentId") int residentId,
+            @PathParam("commitmentId") int commitmentId,
+            @FormParam("role") String role,
+            @FormParam("startDate") String startDate,
+            @FormParam("endDate") String endDate,
+            @FormParam("authorized") boolean authorized
+    ) {
+        Commitment commitment = commitmentFacade.find(commitmentId);
+        commitment.setResident(residentFacade.find(residentId));
+        commitment.setRole(role);
+        commitment.setFromDate(Utility.parseStringToDate(startDate));
+        commitment.setToDate(Utility.parseStringToDate(endDate));
+        commitment.setAuthorized(authorized);
+        commitmentFacade.edit(commitment);
+    }
+
+    @DELETE
+    @Path("{residentId: \\d+}/commitments/{commitmentId: \\d+}")
+    public void deleteCommitment(
+            @PathParam("residentId") int residentId,
+            @PathParam("commitmentId") int commitmentId
+    ) {
+        Commitment commitment = commitmentFacade.findOneResidentCommitment(residentId, commitmentId);
+        commitmentFacade.remove(commitment);
     }
 
 }

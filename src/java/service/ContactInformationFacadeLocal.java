@@ -11,9 +11,9 @@ import javax.ejb.Local;
 @Local
 public interface ContactInformationFacadeLocal {
 
-    void create(ContactInformation contactinformation);
+    ContactInformation create(ContactInformation contactinformation);
 
-    void edit(ContactInformation contactinformation);
+    ContactInformation edit(ContactInformation contactinformation);
 
     void remove(ContactInformation contactinformation);
 

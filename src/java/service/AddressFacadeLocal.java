@@ -11,9 +11,9 @@ import javax.ejb.Local;
 @Local
 public interface AddressFacadeLocal {
 
-    void create(Address address);
+    Address create(Address address);
 
-    void edit(Address address);
+    Address edit(Address address);
 
     void remove(Address address);
 

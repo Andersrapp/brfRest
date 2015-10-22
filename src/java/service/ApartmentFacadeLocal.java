@@ -11,9 +11,9 @@ import javax.ejb.Local;
 @Local
 public interface ApartmentFacadeLocal {
 
-    void create(Apartment apartment);
+    Apartment create(Apartment apartment);
 
-    void edit(Apartment apartment);
+    Apartment edit(Apartment apartment);
 
     void remove(Apartment apartment);
 

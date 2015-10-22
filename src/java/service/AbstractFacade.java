@@ -17,24 +17,23 @@ public abstract class AbstractFacade<T> {
 
     protected abstract EntityManager getEntityManager();
 
-//    public T create(T entity) {
-//        getEntityManager().persist(entity);
-//        getEntityManager().flush();
-//        getEntityManager().refresh(entity);
-//        return entity;
-//    }
-    public void create(T entity) {
+    public T create(T entity) {
         getEntityManager().persist(entity);
+        getEntityManager().flush();
+        getEntityManager().refresh(entity);
+        return entity;
     }
 
-    public void edit(T entity) {
-        getEntityManager().merge(entity);
+    public T edit(T entity) {
+        return getEntityManager().merge(entity);
     }
 
     public void remove(T entity) {
-        getEntityManager().remove(getEntityManager().merge(entity));
+        Object ref = getEntityManager().getReference(entityClass, entity);
+        getEntityManager().remove(ref);
     }
 
+    @SuppressWarnings("unchecked")
     public T find(Object id) {
         return getEntityManager().find(entityClass, id);
     }

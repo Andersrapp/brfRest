@@ -32,7 +32,7 @@ import utilities.Utility;
  * @author Anders
  */
 @Path("apartments")
-public class ApartmentController {
+public class ApartmentResource {
 
     @EJB
     ApartmentFacadeLocal apartmentFacade;
@@ -62,7 +62,7 @@ public class ApartmentController {
     }
 
     @POST
-    @Path("/")
+//    @Path("/")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
     public Response createApartment(
@@ -82,8 +82,11 @@ public class ApartmentController {
         apartment.setFloorCode(floorCode);
         apartment.setRoomCount(roomCount);
         apartment.setShare(share);
-        apartmentFacade.create(apartment);
-        URI location = info.getAbsolutePathBuilder().path(getClass(), "findById").build(apartment.getId());
+        apartment = apartmentFacade.create(apartment);
+        URI location
+                = info.getAbsolutePathBuilder()
+                .path(getClass(), "getApartmentById")
+                .build(apartment.getId());
 
         return Response.created(location).entity(apartment).build();
     }
@@ -99,7 +102,8 @@ public class ApartmentController {
             @FormParam("roomCount") int roomCount,
             @FormParam("share") float share,
             @FormParam("area") int area,
-            @FormParam("floorCode") int floorCode
+            @FormParam("floorCode") int floorCode,
+            @Context UriInfo info
     ) {
         Apartment apartment = apartmentFacade.find(apartmentId);
         apartment.setApartmentNumber(apartmentNumber);
@@ -109,8 +113,13 @@ public class ApartmentController {
         apartment.setShare(share);
         apartment.setArea(area);
         apartment.setFloorCode(floorCode);
-        apartmentFacade.edit(apartment);
-        return Response.ok(apartment).build();
+        apartment = apartmentFacade.edit(apartment);
+        URI location
+                = info.getAbsolutePathBuilder()
+                .build();
+
+        return Response.ok().entity(apartment).
+                link(location, "self").build();
     }
 
     @DELETE
@@ -118,6 +127,8 @@ public class ApartmentController {
     @Path("{apartmentId: \\d+}")
     public void deleteApartment(@PathParam("apartmentId") int apartmentId) {
         Apartment apartment = apartmentFacade.find(apartmentId);
+        apartment.setAddress(null);
+//        apartment.setResidencyList(null);
         apartmentFacade.remove(apartment);
     }
 

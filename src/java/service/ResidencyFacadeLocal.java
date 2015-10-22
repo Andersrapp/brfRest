@@ -12,9 +12,9 @@ import javax.ejb.Local;
 @Local
 public interface ResidencyFacadeLocal {
 
-    void create(Residency residency);
+    Residency create(Residency residency);
 
-    void edit(Residency residency);
+    Residency edit(Residency residency);
 
     void remove(Residency residency);
 

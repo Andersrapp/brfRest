@@ -11,9 +11,9 @@ import javax.ejb.Local;
 @Local
 public interface ResidentFacadeLocal {
 
-    void create(Resident resident);
+    Resident create(Resident resident);
 
-    void edit(Resident resident);
+    Resident edit(Resident resident);
 
     void remove(Resident resident);
 
