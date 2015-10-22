@@ -46,13 +46,11 @@ public class AddressResource {
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     public void createAddress(
-            @FormParam("country") String country,
             @FormParam("city") String city,
             @FormParam("streetName") String streetName,
             @FormParam("streetNumber") String streetNumber
     ) {
         Address address = new Address();
-        address.setCountry(country);
         address.setCity(city);
         address.setStreetName(streetName);
         address.setStreetNumber(streetNumber);
@@ -66,13 +64,11 @@ public class AddressResource {
     @Path("{addressId: \\d+}")
     public void updateAddress(
             @PathParam("addressId") int addressId,
-            @FormParam("country") String country,
             @FormParam("city") String city,
             @FormParam("streetName") String streetName,
             @FormParam("streetNumber") String streetNumber
     ) {
         Address address = addressFacade.find(addressId);
-        address.setCountry(country);
         address.setCity(city);
         address.setStreetName(streetName);
         address.setStreetNumber(streetNumber);
