@@ -1,6 +1,5 @@
 package controller;
 
-import static com.sun.xml.ws.security.policy.Header.URI;
 import dto.ResidencyDTO;
 import entity.Address;
 import entity.Apartment;
@@ -63,6 +62,7 @@ public class ApartmentController {
     }
 
     @POST
+    @Path("/")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
     public Response createApartment(
@@ -84,11 +84,12 @@ public class ApartmentController {
         apartment.setShare(share);
         apartmentFacade.create(apartment);
         URI location = info.getAbsolutePathBuilder().path(getClass(), "findById").build(apartment.getId());
-        
+
         return Response.created(location).entity(apartment).build();
     }
 
     @PUT
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{apartmentId: \\d+}")
     public Response updateApartment(
@@ -146,6 +147,7 @@ public class ApartmentController {
     }
 
     @POST
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{apartmentId: \\d+}/residencies")
     public void createResidency(
@@ -167,6 +169,7 @@ public class ApartmentController {
     }
 
     @PUT
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{apartmentId: \\d+}/residencies/{residencyId: \\d+}")
     public Response updateResidency(

@@ -18,7 +18,8 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import service.AddressFacadeLocal;
@@ -130,8 +131,7 @@ public class ResidentController {
 //
 //        if (year > 0) {
 //        }
-        List<Residency> residencies = new ArrayList<>();
-        residencies = residencyFacade.findResidentResidencies(residentId);
+        List<Residency> residencies = residencyFacade.findResidentResidencies(residentId);
         List<ResidencyDTO> residencyDTOs = new ArrayList<>();
         for (Residency residency : residencies) {
             residencyDTOs.add(Utility.convertResidencyToDTO(residency));
@@ -146,8 +146,7 @@ public class ResidentController {
             @PathParam("residentId") int residentId,
             @PathParam("residencyId") int residencyId
     ) {
-        Residency residency = new Residency();
-        residency = residencyFacade.findOneResidentResidency(residentId, residencyId);
+        Residency residency = residencyFacade.findOneResidentResidency(residentId, residencyId);
         return Response.ok(residency).build();
     }
 
@@ -155,9 +154,8 @@ public class ResidentController {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{residentId: \\d+}/commitments")
     public List<CommitmentDTO> getCommitmentsByResident(@PathParam("residentId") int residentId) {
-        List<Commitment> residentCommitments = new ArrayList<>();
+        List<Commitment> residentCommitments = commitmentFacade.findResidentCommitments(residentId);
         List<CommitmentDTO> commitmentDTOs = new ArrayList<>();
-        residentCommitments = commitmentFacade.findResidentCommitments(residentId);
         for (Commitment c : residentCommitments) {
             commitmentDTOs.add(Utility.convertCommitmentToDTO(c));
         }
@@ -177,31 +175,36 @@ public class ResidentController {
     }
 
     @POST
-//    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @Consumes(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{residentId: \\d+}/commitments")
     public void createCommitment(
             @PathParam("residentId") int residentId,
-                                    Commitment commitment
-//            @FormParam("role") String role,
-//            @FormParam("fromDate") String fromDate,
-//            @FormParam("toDate") String toDate,
-//            @FormParam("authorized") String authorized
+            //            CommitmentDTO2 com
+            @FormParam("role") String role,
+            @FormParam("fromDate") String fromDate,
+            @FormParam("toDate") String toDate,
+            @FormParam("authorized") String authorized,
+            
+            @Context HttpHeaders headers
     ) {
-//        Commitment commitment = new Commitment();
+        Commitment commitment = new Commitment();
 
-//        commitment.setResident(residentFacade.find(residentId));
-//        commitment.setRole(role);
-//        commitment.setFromDate(Utility.parseStringToDate(fromDate));
-//        commitment.setToDate(Utility.parseStringToDate(toDate));
-//        if ("true".equals(authorized)) {
-//            commitment.setAuthorized(true);
-//        }
+        commitment.setResident(residentFacade.find(residentId));
+        commitment.setRole(role);
+        commitment.setFromDate(Utility.parseStringToDate(fromDate));
+        commitment.setToDate(Utility.parseStringToDate(toDate));
+//        commitment.setFromDate(Date.from(com.getFromDate().atStartOfDay(ZoneId.systemDefault()).toInstant()));
+//        commitment.setToDate(Date.from(com.getToDate().atStartOfDay(ZoneId.systemDefault()).toInstant()));
+        if ("true".equals(authorized)) {
+            commitment.setAuthorized(true);
+        }
+
         commitmentFacade.create(commitment);
     }
 
     @PUT
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{residentId: \\d+}/commitments/{commitmentId: \\d+}")
     public void updateCommitment(
@@ -222,7 +225,6 @@ public class ResidentController {
     }
 
     @DELETE
-//    @Produces(MediaType.APPLICATION_JSON)
     @Path("{residentId: \\d+}/commitments/{commitmentId: \\d+}")
     public void deleteCommitment(
             @PathParam("residentId") int residentId,
@@ -245,6 +247,7 @@ public class ResidentController {
     }
 
     @POST
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{residentId: \\d+}/contactinformation")
     public void createContactInformation(
@@ -263,7 +266,7 @@ public class ResidentController {
     }
 
     @PUT
-//    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("{residentId: \\d+}/contactinformation/{contactInformationId: \\d+}")
     public void updateContactInformation(
             @PathParam("residentId") int residentId,
