@@ -1,12 +1,15 @@
 package controller;
 
+import static com.sun.xml.ws.security.policy.Header.URI;
 import dto.ResidencyDTO;
 import entity.Address;
 import entity.Apartment;
 import entity.Residency;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.EJB;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -15,8 +18,10 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 import service.AddressFacadeLocal;
 import service.ApartmentFacadeLocal;
 import service.ResidencyFacadeLocal;
@@ -58,14 +63,16 @@ public class ApartmentController {
     }
 
     @POST
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
-    public void createApartment(
+    public Response createApartment(
             @FormParam("apartmentNumber") int apartmentNumber,
             @FormParam("addressId") int addressId,
             @FormParam("area") int area,
             @FormParam("floorCode") int floorCode,
             @FormParam("roomCount") int roomCount,
-            @FormParam("share") float share
+            @FormParam("share") float share,
+            @Context UriInfo info
     ) {
         Apartment apartment = new Apartment();
         apartment.setApartmentNumber(apartmentNumber);
@@ -76,6 +83,9 @@ public class ApartmentController {
         apartment.setRoomCount(roomCount);
         apartment.setShare(share);
         apartmentFacade.create(apartment);
+        URI location = info.getAbsolutePathBuilder().path(getClass(), "findById").build(apartment.getId());
+        
+        return Response.created(location).entity(apartment).build();
     }
 
     @PUT
@@ -190,10 +200,4 @@ public class ApartmentController {
         residencyFacade.remove(residency);
         return Response.ok().build();
     }
-
-//    @POST
-//    @Produces(MediaType.APPLICATION_JSON)
-//    @Path("{apartmendId: \\d+}/address")
-//    public Response createApartmentAddress() {
-//    }
 }

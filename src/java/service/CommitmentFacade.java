@@ -35,9 +35,9 @@ public class CommitmentFacade extends AbstractFacade<Commitment> implements Comm
     }
 
     @Override
-    public Commitment findOneResidentCommitment(int residentId, int commitmendId) {
+    public Commitment findOneResidentCommitment(int residentId, int commitmentId) {
         TypedQuery query = em.createNamedQuery("Commitment.findOneResidentCommitment", Commitment.class);
-        query.setParameter("residentId", residentId).setParameter("commitmentId", commitmendId);
+        query.setParameter("residentId", residentId).setParameter("commitmentId", commitmentId);
         Commitment commitment = (Commitment) query.getSingleResult();
         return commitment;
     }

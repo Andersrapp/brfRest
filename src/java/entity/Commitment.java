@@ -34,7 +34,10 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Commitment.findByToDate", query = "SELECT c FROM Commitment c WHERE c.toDate = :toDate"),
     @NamedQuery(name = "Commitment.findByAuthorized", query = "SELECT c FROM Commitment c WHERE c.authorized = :authorized"),
     @NamedQuery(name = "Commitment.findResidentCommitments",
-            query = "SELECT c FROM Commitment c WHERE c.resident.id = :residentId")
+            query = "SELECT c FROM Commitment c WHERE c.resident.id = :residentId"),
+
+    @NamedQuery(name = "Commitment.findOneResidentCommitment",
+            query = "SELECT c FROM Commitment c WHERE c.id = :commitmentId AND c.resident.id = :residentId")
 })
 public class Commitment implements Serializable {
 

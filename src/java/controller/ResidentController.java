@@ -9,6 +9,7 @@ import entity.Resident;
 import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.EJB;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -17,6 +18,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import service.AddressFacadeLocal;
@@ -68,38 +70,44 @@ public class ResidentController {
     }
 
     @POST
+    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response createResident(
-            @FormParam("ssn") String ssn,
-            @FormParam("firstName") String firstName,
-            @FormParam("lastName") String lastName) {
-        if (ssn == null) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity("SSN is missing")
-                    .type(MediaType.TEXT_PLAIN)
-                    .build();
-        }
-        Resident resident = new Resident();
-        resident.setSsn(ssn);
-        resident.setFirstName(firstName);
-        resident.setLastName(lastName);
+            //            @FormParam("ssn") String ssn,
+            //            @FormParam("firstName") String firstName,
+            //            @FormParam("lastName") String lastName
+            Resident resident
+    ) {
+//        if (ssn == null) {
+//            return Response.status(Response.Status.BAD_REQUEST)
+//                    .entity("SSN is missing")
+//                    .type(MediaType.TEXT_PLAIN)
+//                    .build();
+//        }
+//        Resident resident = new Resident();
+//        resident.setSsn(ssn);
+//        resident.setFirstName(firstName);
+//        resident.setLastName(lastName);
         residentFacade.create(resident);
         return Response.ok(resident, "application/json").build();
     }
 
     @PUT
+    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{residentId: \\d+}")
     public void updateResident(
             @PathParam("residentId") int residentId,
-            @FormParam("ssn") String ssn,
-            @FormParam("firstName") String firstName,
-            @FormParam("lastName") String lastName
+            //            @FormParam("ssn") String ssn,
+            //            @FormParam("firstName") String firstName,
+            //            @FormParam("lastName") String lastName
+            Resident resident
     ) {
-        Resident resident = getOneResidentById(residentId);
-        resident.setSsn(ssn);
-        resident.setFirstName(firstName);
-        resident.setLastName(lastName);
+        resident.setId(residentId);
+//        Resident resident = getOneResidentById(residentId);
+//        resident.setSsn(ssn);
+//        resident.setFirstName(firstName);
+//        resident.setLastName(lastName);
         residentFacade.edit(resident);
     }
 
@@ -114,7 +122,14 @@ public class ResidentController {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{residentId: \\d+}/residencies")
-    public List<ResidencyDTO> getResidenciesByResidentId(@PathParam("residentId") int residentId) {
+    public List<ResidencyDTO> getResidenciesByResidentId(
+            @PathParam("residentId") int residentId
+    //            ,
+    //            @QueryParam("year") int year
+    ) {
+//
+//        if (year > 0) {
+//        }
         List<Residency> residencies = new ArrayList<>();
         residencies = residencyFacade.findResidentResidencies(residentId);
         List<ResidencyDTO> residencyDTOs = new ArrayList<>();
@@ -156,29 +171,33 @@ public class ResidentController {
             @PathParam("residentId") int residentId,
             @PathParam("commitmentId") int commitmentId
     ) {
-        Commitment commitment = new Commitment();
-        commitment = commitmentFacade.findOneResidentCommitment(residentId, commitmentId);
+        Commitment commitment = commitmentFacade.findOneResidentCommitment(residentId, commitmentId);
         CommitmentDTO commitmentDTO = Utility.convertCommitmentToDTO(commitment);
         return Response.ok(commitmentDTO).build();
     }
 
     @POST
+//    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{residentId: \\d+}/commitments")
     public void createCommitment(
             @PathParam("residentId") int residentId,
-            @FormParam("role") String role,
-            @FormParam("fromDate") String fromDate,
-            @FormParam("toDate") String toDate,
-            @FormParam("authorized") String authorized
+                                    Commitment commitment
+//            @FormParam("role") String role,
+//            @FormParam("fromDate") String fromDate,
+//            @FormParam("toDate") String toDate,
+//            @FormParam("authorized") String authorized
     ) {
-        Commitment commitment = new Commitment();
+//        Commitment commitment = new Commitment();
 
-        commitment.setResident(residentFacade.find(residentId));
-        commitment.setRole(role);
-        commitment.setFromDate(Utility.parseStringToDate(fromDate));
-        commitment.setToDate(Utility.parseStringToDate(toDate));
-        commitment.setAuthorized("true".equals(authorized) ? true : false);
+//        commitment.setResident(residentFacade.find(residentId));
+//        commitment.setRole(role);
+//        commitment.setFromDate(Utility.parseStringToDate(fromDate));
+//        commitment.setToDate(Utility.parseStringToDate(toDate));
+//        if ("true".equals(authorized)) {
+//            commitment.setAuthorized(true);
+//        }
         commitmentFacade.create(commitment);
     }
 
@@ -203,7 +222,7 @@ public class ResidentController {
     }
 
     @DELETE
-    @Produces(MediaType.APPLICATION_JSON)
+//    @Produces(MediaType.APPLICATION_JSON)
     @Path("{residentId: \\d+}/commitments/{commitmentId: \\d+}")
     public void deleteCommitment(
             @PathParam("residentId") int residentId,
