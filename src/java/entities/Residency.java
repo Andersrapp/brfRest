@@ -17,6 +17,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -98,6 +99,7 @@ public class Residency implements Serializable {
         this.toDate = toDate;
     }
 
+    @XmlTransient
     public Apartment getApartment() {
         return apartment;
     }
@@ -106,6 +108,7 @@ public class Residency implements Serializable {
         this.apartment = apartment;
     }
 
+    @XmlTransient
     public Resident getResident() {
         return resident;
     }

@@ -70,153 +70,153 @@ public class ResidentResource {
         Resident resident = residentFacade.find(residentId);
         return resident;
     }
-//
-//    @POST
-//    @Consumes(MediaType.APPLICATION_JSON)
-//    @Produces(MediaType.APPLICATION_JSON)
-//    public Response createResident(
-//            //            @FormParam("ssn") String ssn,
-//            //            @FormParam("firstName") String firstName,
-//            //            @FormParam("lastName") String lastName
-//            Resident resident,
-//            @Context UriInfo info
-//    ) {
-////        if (ssn == null) {
-////            return Response.status(Response.Status.BAD_REQUEST)
-////                    .entity("SSN is missing")
-////                    .type(MediaType.TEXT_PLAIN)
-////                    .build();
-////        }
-////        Resident resident = new Resident();
-////        resident.setSsn(ssn);
-////        resident.setFirstName(firstName);
-////        resident.setLastName(lastName);
-//        resident = residentFacade.create(resident);
-//        return Response.ok(resident, "application/json").build();
-//    }
-//
-//    @PUT
-//    @Consumes(MediaType.APPLICATION_JSON)
-//    @Produces(MediaType.APPLICATION_JSON)
-//    @Path("{residentId: \\d+}")
-//    public void updateResident(
-//            @PathParam("residentId") int residentId,
-//            //            @FormParam("ssn") String ssn,
-//            //            @FormParam("firstName") String firstName,
-//            //            @FormParam("lastName") String lastName
-//            Resident resident
-//    ) {
-//        resident.setId(residentId);
-////        Resident resident = getOneResidentById(residentId);
-////        resident.setSsn(ssn);
-////        resident.setFirstName(firstName);
-////        resident.setLastName(lastName);
-//        residentFacade.edit(resident);
-//    }
-//
-//    @DELETE
-//    @Produces(MediaType.APPLICATION_JSON)
-//    @Path("{residentId: \\d+}")
-//    public void deleteResident(@PathParam("residentId") int residentId) {
-//        Resident resident = getOneResidentById(residentId);
-//        residentFacade.remove(resident);
-//    }
-//
-//    @GET
-//    @Produces(MediaType.APPLICATION_JSON)
-//    @Path("{residentId: \\d+}/residencies")
-//    public List<ResidencyDTO> getResidenciesByResidentId(
-//            @PathParam("residentId") int residentId
-//    //            ,
-//    //            @QueryParam("year") int year
-//    ) {
-////
-////        if (year > 0) {
-////        }
-//        List<Residency> residencies = residencyFacade.findResidentResidencies(residentId);
-//        List<ResidencyDTO> residencyDTOs = new ArrayList<>();
-//        for (Residency residency : residencies) {
-//            residencyDTOs.add(Utility.convertResidencyToDTO(residency));
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response createResident(
+            //            @FormParam("ssn") String ssn,
+            //            @FormParam("firstName") String firstName,
+            //            @FormParam("lastName") String lastName
+            Resident resident,
+            @Context UriInfo info
+    ) {
+//        if (ssn == null) {
+//            return Response.status(Response.Status.BAD_REQUEST)
+//                    .entity("SSN is missing")
+//                    .type(MediaType.TEXT_PLAIN)
+//                    .build();
 //        }
-//        return residencyDTOs;
-//    }
+//        Resident resident = new Resident();
+//        resident.setSsn(ssn);
+//        resident.setFirstName(firstName);
+//        resident.setLastName(lastName);
+        resident = residentFacade.create(resident);
+        return Response.ok(resident, "application/json").build();
+    }
+
+    @PUT
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("{residentId: \\d+}")
+    public void updateResident(
+            @PathParam("residentId") int residentId,
+            //            @FormParam("ssn") String ssn,
+            //            @FormParam("firstName") String firstName,
+            //            @FormParam("lastName") String lastName
+            Resident resident
+    ) {
+        resident.setId(residentId);
+//        Resident resident = getOneResidentById(residentId);
+//        resident.setSsn(ssn);
+//        resident.setFirstName(firstName);
+//        resident.setLastName(lastName);
+        residentFacade.edit(resident);
+    }
+
+    @DELETE
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("{residentId: \\d+}")
+    public void deleteResident(@PathParam("residentId") int residentId) {
+        Resident resident = getOneResidentById(residentId);
+        residentFacade.remove(resident);
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("{residentId: \\d+}/residencies")
+    public List<ResidencyDTO> getResidenciesByResidentId(
+            @PathParam("residentId") int residentId
+    //            ,
+    //            @QueryParam("year") int year
+    ) {
 //
-//    @GET
-//    @Produces(MediaType.APPLICATION_JSON)
-//    @Path("{residentId: \\d+}/residencies/{residencyId: \\d+}")
-//    public Response getResidentResidencyById(
-//            @PathParam("residentId") int residentId,
-//            @PathParam("residencyId") int residencyId
-//    ) {
-//        Residency residency = residencyFacade.findOneResidentResidency(residentId, residencyId);
-//        return Response.ok(residency).build();
-//    }
-//
-//    @GET
-//    @Produces(MediaType.APPLICATION_JSON)
-//    @Path("{residentId: \\d+}/contactinformation")
-//    public Response getResidentContactInformation(
-//            @PathParam("residentId") int residentId
-//    ) {
-//        ContactInformation contactInformation
-//                = contactInformationFacade.findResidentContactinformation(residentId);
-//
-//        return Response.ok(contactInformation).build();
-//    }
-//
-//    @POST
-//    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-//    @Produces(MediaType.APPLICATION_JSON)
-//    @Path("{residentId: \\d+}/contactinformation")
-//    public void createContactInformation(
-//            @PathParam("residentId") int residentId,
-//            @FormParam("telephone") String telephone,
-//            @FormParam("email") String email
-//    ) {
-//        ContactInformation contactInformation = new ContactInformation();
-//        contactInformation.setResident(residentFacade.find(residentId));
-//        contactInformation.setTelephone(telephone);
-//        contactInformation.setEmail(email);
-//        contactInformationFacade.create(contactInformation);
-//        Resident resident = residentFacade.find(residentId);
-////        resident.setContactInformation(contactInformation);
-//        residentFacade.edit(resident);
-//    }
-//
-//    @PUT
-//    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-//    @Path("{residentId: \\d+}/contactinformation/{contactInformationId: \\d+}")
-//    public void updateContactInformation(
-//            @PathParam("residentId") int residentId,
-//            @PathParam("contactInformationId") int contactInformationId,
-//            @FormParam("telephone") String telephone,
-//            @FormParam("email") String email
-//    ) {
-//        ContactInformation contactInformation
-//                = contactInformationFacade.findResidentContactinformation(residentId);
-//        contactInformation.setResident(residentFacade.find(residentId));
-//        contactInformation.setTelephone(telephone);
-//        contactInformation.setEmail(email);
-//
-//        contactInformationFacade.edit(contactInformation);
-//    }
-//
-//    @DELETE
-//    @Path("{residentId: \\d+}/contactinformation/{contactInformationId: \\d+}")
-//    public void deleteContactInformation(
-//            @PathParam("residentId") int residentId,
-//            @PathParam("contactInformationId") int contactInformationId) {
-//        ContactInformation contactInformation
-//                = contactInformationFacade.findResidentContactinformation(residentId);
-//        contactInformationFacade.remove(contactInformation);
-//    }
-//
-////    @Path("{residentId: \\d+}/commitments")
-////    @Consumes(MediaType.APPLICATION_JSON)
-////    public CommitmentResource getCommitmentResource() {
-////        return new CommitmentResource();
-////    }
-//    
+//        if (year > 0) {
+//        }
+        List<Residency> residencies = residencyFacade.findResidentResidencies(residentId);
+        List<ResidencyDTO> residencyDTOs = new ArrayList<>();
+        for (Residency residency : residencies) {
+            residencyDTOs.add(Utility.convertResidencyToDTO(residency));
+        }
+        return residencyDTOs;
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("{residentId: \\d+}/residencies/{residencyId: \\d+}")
+    public Response getResidentResidencyById(
+            @PathParam("residentId") int residentId,
+            @PathParam("residencyId") int residencyId
+    ) {
+        Residency residency = residencyFacade.findOneResidentResidency(residentId, residencyId);
+        return Response.ok(residency).build();
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("{residentId: \\d+}/contactinformation")
+    public Response getResidentContactInformation(
+            @PathParam("residentId") int residentId
+    ) {
+        ContactInformation contactInformation
+                = contactInformationFacade.findResidentContactinformation(residentId);
+
+        return Response.ok(contactInformation).build();
+    }
+
+    @POST
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("{residentId: \\d+}/contactinformation")
+    public void createContactInformation(
+            @PathParam("residentId") int residentId,
+            @FormParam("telephone") String telephone,
+            @FormParam("email") String email
+    ) {
+        ContactInformation contactInformation = new ContactInformation();
+        contactInformation.setResident(residentFacade.find(residentId));
+        contactInformation.setTelephone(telephone);
+        contactInformation.setEmail(email);
+        contactInformationFacade.create(contactInformation);
+        Resident resident = residentFacade.find(residentId);
+//        resident.setContactInformation(contactInformation);
+        residentFacade.edit(resident);
+    }
+
+    @PUT
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Path("{residentId: \\d+}/contactinformation/{contactInformationId: \\d+}")
+    public void updateContactInformation(
+            @PathParam("residentId") int residentId,
+            @PathParam("contactInformationId") int contactInformationId,
+            @FormParam("telephone") String telephone,
+            @FormParam("email") String email
+    ) {
+        ContactInformation contactInformation
+                = contactInformationFacade.findResidentContactinformation(residentId);
+        contactInformation.setResident(residentFacade.find(residentId));
+        contactInformation.setTelephone(telephone);
+        contactInformation.setEmail(email);
+
+        contactInformationFacade.edit(contactInformation);
+    }
+
+    @DELETE
+    @Path("{residentId: \\d+}/contactinformation/{contactInformationId: \\d+}")
+    public void deleteContactInformation(
+            @PathParam("residentId") int residentId,
+            @PathParam("contactInformationId") int contactInformationId) {
+        ContactInformation contactInformation
+                = contactInformationFacade.findResidentContactinformation(residentId);
+        contactInformationFacade.remove(contactInformation);
+    }
+
+    @Path("{residentId: \\d+}/commitments")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public CommitmentResource getCommitmentResource() {
+        return new CommitmentResource();
+    }
+    
 //    @GET
 //    @Path("{residentId: \\d+}/commitments")
 //    @Produces(MediaType.APPLICATION_JSON)
