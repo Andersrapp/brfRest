@@ -46,12 +46,21 @@ public class ApartmentResource {
     @EJB
     ResidentFacadeLocal residentFacade;
 
+    @Context
+    UriInfo info;
+
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{apartmentId: \\d+}")
-    public Apartment getApartmentById(@PathParam("apartmentId") int apartmentId) {
+
+    public Response getApartmentById(@PathParam("apartmentId") int apartmentId) {
         Apartment apartment = apartmentFacade.find(apartmentId);
-        return apartment;
+        URI location
+                = info.getAbsolutePathBuilder().build();
+
+        return Response.created(location).entity(apartment).build();
+
+//        return apartment;
     }
 
     @GET
@@ -60,6 +69,16 @@ public class ApartmentResource {
         List<Apartment> apartments = apartmentFacade.findAll();
         return apartments;
     }
+    
+//    @GET
+//    @Produces(MediaType.APPLICATION_JSON)
+//    public Response getAllApartments2() {
+//        List<Apartment> apartments = apartmentFacade.findAll();
+//        URI location
+//                = info.getAbsolutePathBuilder().build();
+//
+//        return Response.ok(location).entity(apartments).build();
+//    }
 
     @POST
 //    @Path("/")
@@ -71,8 +90,7 @@ public class ApartmentResource {
             @FormParam("area") int area,
             @FormParam("floorCode") int floorCode,
             @FormParam("roomCount") int roomCount,
-            @FormParam("share") float share,
-            @Context UriInfo info
+            @FormParam("share") float share
     ) {
         Apartment apartment = new Apartment();
         apartment.setApartmentNumber(apartmentNumber);
@@ -102,8 +120,7 @@ public class ApartmentResource {
             @FormParam("roomCount") int roomCount,
             @FormParam("share") float share,
             @FormParam("area") int area,
-            @FormParam("floorCode") int floorCode,
-            @Context UriInfo info
+            @FormParam("floorCode") int floorCode
     ) {
         Apartment apartment = apartmentFacade.find(apartmentId);
         apartment.setApartmentNumber(apartmentNumber);

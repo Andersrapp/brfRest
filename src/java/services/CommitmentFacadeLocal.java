@@ -25,7 +25,7 @@ public interface CommitmentFacadeLocal {
 
     int count();
     
-    List<Commitment> findResidentCommitments(int residentId);
+    List<Commitment> findResidentCommitments(Object residentId);
     
     Commitment findOneResidentCommitment(int residentId, int commitmendId);
 }

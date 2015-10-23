@@ -27,7 +27,7 @@ public class CommitmentFacade extends AbstractFacade<Commitment> implements Comm
     }
 
     @Override
-    public List<Commitment> findResidentCommitments(int residentId) {
+    public List<Commitment> findResidentCommitments(Object residentId) {
         TypedQuery query = em.createNamedQuery("Commitment.findResidentCommitments", Commitment.class);
         query.setParameter("residentId", residentId);
         List<Commitment> residentCommitments = query.getResultList();
