@@ -1,0 +1,37 @@
+Commitment
+
+@NamedQuery(name = "Commitment.findResidentCommitments",
+            query = "SELECT c FROM Commitment c WHERE c.resident.id = :residentId"),
+
+    @NamedQuery(name = "Commitment.findOneResidentCommitment",
+            query = "SELECT c FROM Commitment c WHERE c.id = :commitmentId AND c.resident.id = :residentId")
+
+
+------------------
+
+
+ContactInformation
+
+
+@NamedQuery(name = "ContactInformaion.findResidentContactInformation",
+            query = "SELECT c FROM ContactInformation c WHERE c.resident.id = :residentId")
+
+
+------------------
+
+
+Residency
+
+@NamedQuery(name = "Residency.findResidenciesByApartment",
+            query = "SELECT r FROM Residency r WHERE r.apartment.id = :apartmentId"),
+    @NamedQuery(name = "Residency.findOneApartmentResidency",
+            query = "SELECT r FROM Residency r WHERE r.id = :residencyId AND r.apartment.id = :apartmentId"),
+    @NamedQuery(name = "Residency.findResidenciesByResident",
+            query = "SELECT r FROM Residency r WHERE r.resident.id = :residentId"),
+    @NamedQuery(name = "Residency.findOneResidentResidency",
+            query = "SELECT r FROM Residency r WHERE r.id = :residencyId AND r.resident.id = :residentId")
+
+
+
+-------------------
+
