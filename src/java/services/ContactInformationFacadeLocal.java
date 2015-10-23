@@ -25,6 +25,6 @@ public interface ContactInformationFacadeLocal {
 
     int count();
 
-    ContactInformation findResidentContactinformation(int residentId);
+    ContactInformation findResidentContactinformation(Object residentId);
 
 }

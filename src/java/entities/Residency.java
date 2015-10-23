@@ -38,7 +38,6 @@ import javax.xml.bind.annotation.XmlRootElement;
             query = "SELECT r FROM Residency r WHERE r.resident.id = :residentId"),
     @NamedQuery(name = "Residency.findOneResidentResidency",
             query = "SELECT r FROM Residency r WHERE r.id = :residencyId AND r.resident.id = :residentId")
-
 })
 public class Residency implements Serializable {
 
@@ -137,7 +136,7 @@ public class Residency implements Serializable {
 
     @Override
     public String toString() {
-        return "entity.Residency[ id=" + id + " ]";
+        return "entities.Residency[ id=" + id + " ]";
     }
 
 }

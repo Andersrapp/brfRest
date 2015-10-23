@@ -26,9 +26,9 @@ public class ContactInformationFacade extends AbstractFacade<ContactInformation>
     }
 
     @Override
-    public ContactInformation findResidentContactinformation(int residentId) {
+    public ContactInformation findResidentContactinformation(Object residentId) {
         TypedQuery query
-                = em.createNamedQuery("ContactInformaion.findResidentContactInformation",
+                = em.createNamedQuery("ContactInformation.findResidentContactInformation",
                         ContactInformation.class);
         query.setParameter("residentId", residentId);
         ContactInformation contactinformation = (ContactInformation) query.getSingleResult();

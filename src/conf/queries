@@ -2,20 +2,20 @@ Commitment
 
 @NamedQuery(name = "Commitment.findResidentCommitments",
             query = "SELECT c FROM Commitment c WHERE c.resident.id = :residentId"),
-
     @NamedQuery(name = "Commitment.findOneResidentCommitment",
             query = "SELECT c FROM Commitment c WHERE c.id = :commitmentId AND c.resident.id = :residentId")
-
 
 ------------------
 
 
 ContactInformation
 
-
-@NamedQuery(name = "ContactInformaion.findResidentContactInformation",
-            query = "SELECT c FROM ContactInformation c WHERE c.resident.id = :residentId")
-
+       @NamedQuery(name = "ContactInformation.findAll", query = "SELECT c FROM ContactInformation c"),
+    @NamedQuery(name = "ContactInformation.findById", query = "SELECT c FROM ContactInformation c WHERE c.residentId = :id"),
+    @NamedQuery(name = "ContactInformation.findByTelephone", query = "SELECT c FROM ContactInformation c WHERE c.telephone = :telephone"),
+    @NamedQuery(name = "ContactInformation.findByEmail", query = "SELECT c FROM ContactInformation c WHERE c.email = :email"),
+    @NamedQuery(name = "ContactInformation.findResidentContactInformation",
+            query = "SELECT c FROM ContactInformation c WHERE c.residentId = :residentId")
 
 ------------------
 

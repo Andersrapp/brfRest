@@ -9,7 +9,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -52,9 +51,8 @@ public class Resident implements Serializable {
     private List<Residency> residencyList;
     @OneToMany(mappedBy = "resident")
     private List<Commitment> commitmentList;
-    @JoinColumn(name = "contactInformation", referencedColumnName = "id")
-    @OneToOne 
-    private ContactInformation contactInformation;
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "resident")
+    private ContactInformation contactinformation;
 
     public Resident() {
     }
@@ -113,12 +111,12 @@ public class Resident implements Serializable {
         this.commitmentList = commitmentList;
     }
 
-    public ContactInformation getContactInformation() {
-        return contactInformation;
+    public ContactInformation getContactinformation() {
+        return contactinformation;
     }
 
-    public void setContactInformation(ContactInformation contactInformation) {
-        this.contactInformation = contactInformation;
+    public void setContactinformation(ContactInformation contactinformation) {
+        this.contactinformation = contactinformation;
     }
 
     @Override
@@ -143,7 +141,7 @@ public class Resident implements Serializable {
 
     @Override
     public String toString() {
-        return "entity.Resident[ id=" + id + " ]";
+        return "entities.Resident[ id=" + id + " ]";
     }
     
 }

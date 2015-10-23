@@ -5,12 +5,6 @@ streetName VARCHAR(50),
 streetNumber VARCHAR(5)
 );
 
-CREATE TABLE ContactInformation(
-id INTEGER PRIMARY KEY AUTO_INCREMENT,
-telephone VARCHAR(30),
-email VARCHAR(50)
-);
-
 CREATE TABLE Apartment(
 id INTEGER PRIMARY KEY AUTO_INCREMENT,
 apartmentNumber INTEGER NOT NULL UNIQUE,
@@ -26,9 +20,14 @@ CREATE TABLE Resident(
 id INTEGER PRIMARY KEY AUTO_INCREMENT,
 ssn VARCHAR(12),
 firstName VARCHAR(20),
-lastName VARCHAR(20),
-contactInformation INTEGER UNIQUE,
-CONSTRAINT fk_resident_contactinformation FOREIGN KEY (contactInformation) REFERENCES ContactInformation(id)
+lastName VARCHAR(20)
+);
+
+CREATE TABLE ContactInformation(
+residentId INTEGER PRIMARY KEY,
+telephone VARCHAR(30),
+email VARCHAR(50),
+CONSTRAINT fk_resident FOREIGN KEY(residentId) REFERENCES Resident(id)
 );
 
 CREATE TABLE Residency(

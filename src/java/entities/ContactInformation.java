@@ -4,13 +4,13 @@ import java.io.Serializable;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -23,20 +23,20 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "ContactInformation.findAll", query = "SELECT c FROM ContactInformation c"),
-    @NamedQuery(name = "ContactInformation.findById", query = "SELECT c FROM ContactInformation c WHERE c.id = :id"),
+    @NamedQuery(name = "ContactInformation.findById", query = "SELECT c FROM ContactInformation c WHERE c.residentId = :id"),
     @NamedQuery(name = "ContactInformation.findByTelephone", query = "SELECT c FROM ContactInformation c WHERE c.telephone = :telephone"),
     @NamedQuery(name = "ContactInformation.findByEmail", query = "SELECT c FROM ContactInformation c WHERE c.email = :email"),
-    @NamedQuery(name = "ContactInformaion.findResidentContactInformation",
-            query = "SELECT c FROM ContactInformation c WHERE c.resident.id = :residentId")
+    @NamedQuery(name = "ContactInformation.findResidentContactInformation",
+            query = "SELECT c FROM ContactInformation c WHERE c.residentId = :residentId")
 })
 public class ContactInformation implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(name = "id")
-    private Integer id;
+    @NotNull
+    @Column(name = "residentId")
+    private Integer residentId;
     @Size(max = 30)
     @Column(name = "telephone")
     private String telephone;
@@ -44,22 +44,23 @@ public class ContactInformation implements Serializable {
     @Size(max = 50)
     @Column(name = "email")
     private String email;
-    @OneToOne(mappedBy = "contactInformation")
+    @JoinColumn(name = "residentId", referencedColumnName = "id", insertable = false, updatable = false)
+    @OneToOne(optional = false)
     private Resident resident;
 
     public ContactInformation() {
     }
 
-    public ContactInformation(Integer id) {
-        this.id = id;
+    public ContactInformation(Integer residentId) {
+        this.residentId = residentId;
     }
 
-    public Integer getId() {
-        return id;
+    public Integer getResidentId() {
+        return residentId;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public void setResidentId(Integer residentId) {
+        this.residentId = residentId;
     }
 
     public String getTelephone() {
@@ -89,7 +90,7 @@ public class ContactInformation implements Serializable {
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
+        hash += (residentId != null ? residentId.hashCode() : 0);
         return hash;
     }
 
@@ -100,7 +101,7 @@ public class ContactInformation implements Serializable {
             return false;
         }
         ContactInformation other = (ContactInformation) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+        if ((this.residentId == null && other.residentId != null) || (this.residentId != null && !this.residentId.equals(other.residentId))) {
             return false;
         }
         return true;
@@ -108,7 +109,7 @@ public class ContactInformation implements Serializable {
 
     @Override
     public String toString() {
-        return "entity.Contactinformation[ id=" + id + " ]";
+        return "entities.Contactinformation[ residentId=" + residentId + " ]";
     }
 
 }

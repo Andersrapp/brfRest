@@ -162,7 +162,7 @@ public class Apartment implements Serializable {
 
     @Override
     public String toString() {
-        return "entity.Apartment[ id=" + id + " ]";
+        return "entities.Apartment[ id=" + id + " ]";
     }
     
 }

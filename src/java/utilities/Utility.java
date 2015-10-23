@@ -26,7 +26,11 @@ public class Utility {
         residencyDTO.setApartment(residency.getApartment());
         residencyDTO.setResident(residency.getResident());
         residencyDTO.setFromDate(convertDateToLocalDate(residency.getFromDate()));
-        residencyDTO.setToDate(convertDateToLocalDate(residency.getToDate()));
+        Date toDate = residency.getToDate();
+        if (toDate != null) {
+            residencyDTO.setToDate(convertDateToLocalDate(toDate));
+        }
+
         return residencyDTO;
     }
 
