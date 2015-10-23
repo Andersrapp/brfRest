@@ -53,7 +53,7 @@ public class Resident implements Serializable {
     @OneToMany(mappedBy = "resident")
     private List<Commitment> commitmentList;
     @JoinColumn(name = "contactInformation", referencedColumnName = "id")
-    @OneToOne
+    @OneToOne 
     private ContactInformation contactInformation;
 
     public Resident() {
