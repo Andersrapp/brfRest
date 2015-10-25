@@ -1,7 +1,6 @@
 package services;
 
 import entities.Residency;
-import entities.Resident;
 import java.util.List;
 import javax.ejb.Local;
 
