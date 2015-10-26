@@ -35,6 +35,10 @@ public class CommitmentResource {
     @EJB
     ResidentFacadeLocal residentFacade;
 
+    public CommitmentResource(CommitmentFacadeLocal commitmentFacade) {
+        this.commitmentFacade = commitmentFacade;
+    }
+
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public List<CommitmentDTO> getCommitmentsByResident(@PathParam("residentId") int residentId) {
