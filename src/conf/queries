@@ -35,3 +35,4 @@ Residency
 
 -------------------
 
+mvn archetype:generate -Dfilter=com.airhacks:javaee7-essentials-archetype -DgroupId=se.andersrapp -DartifactId=MavenTest
