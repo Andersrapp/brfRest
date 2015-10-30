@@ -214,9 +214,9 @@ public class ResidentResource {
     @Path("{residentId: \\d+}/commitments")
     @Consumes(MediaType.APPLICATION_JSON)
     public CommitmentResource getCommitmentResource() {
-        return new CommitmentResource();
+        return new CommitmentResource(commitmentFacade);
     }
-    
+
 //    @GET
 //    @Path("{residentId: \\d+}/commitments")
 //    @Produces(MediaType.APPLICATION_JSON)
