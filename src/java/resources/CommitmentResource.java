@@ -35,9 +35,7 @@ public class CommitmentResource {
     @EJB
     ResidentFacadeLocal residentFacade;
 
-    public CommitmentResource(
-            CommitmentFacadeLocal commitmentFacade
-    ) {
+    public CommitmentResource(CommitmentFacadeLocal commitmentFacade) {
         this.commitmentFacade = commitmentFacade;
     }
 
