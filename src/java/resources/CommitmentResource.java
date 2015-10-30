@@ -35,20 +35,22 @@ public class CommitmentResource {
     @EJB
     ResidentFacadeLocal residentFacade;
 
-    public CommitmentResource(CommitmentFacadeLocal commitmentFacade) {
+    public CommitmentResource(
+            CommitmentFacadeLocal commitmentFacade
+    ) {
         this.commitmentFacade = commitmentFacade;
     }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<CommitmentDTO> getCommitmentsByResident(@PathParam("residentId") int residentId) {
+    public List<Commitment> getCommitmentsByResident(@PathParam("residentId") int residentId) {
         List<Commitment> residentCommitments = new ArrayList<>();
         residentCommitments = commitmentFacade.findResidentCommitments(residentId);
         List<CommitmentDTO> commitmentDTOs = new ArrayList<>();
         residentCommitments.stream().forEach((c) -> {
             commitmentDTOs.add(Utility.convertCommitmentToDTO(c));
         });
-        return commitmentDTOs;
+        return residentCommitments;
     }
 
     @GET
@@ -79,8 +81,8 @@ public class CommitmentResource {
 
         commitment.setResident(residentFacade.find(residentId));
         commitment.setRole(role);
-        commitment.setFromDate(Utility.parseStringToDate(fromDate));
-        commitment.setToDate(Utility.parseStringToDate(toDate));
+//        commitment.setFromDate(Utility.parseStringToDate(fromDate));
+//        commitment.setToDate(Utility.parseStringToDate(toDate));
 //        commitment.setFromDate(Date.from(com.getFromDate().atStartOfDay(ZoneId.systemDefault()).toInstant()));
 //        commitment.setToDate(Date.from(com.getToDate().atStartOfDay(ZoneId.systemDefault()).toInstant()));
         if ("true".equals(authorized)) {
@@ -105,8 +107,8 @@ public class CommitmentResource {
         Commitment commitment = commitmentFacade.find(commitmentId);
         commitment.setResident(residentFacade.find(residentId));
         commitment.setRole(role);
-        commitment.setFromDate(Utility.parseStringToDate(startDate));
-        commitment.setToDate(Utility.parseStringToDate(endDate));
+//        commitment.setFromDate(Utility.parseStringToDate(startDate));
+//        commitment.setToDate(Utility.parseStringToDate(endDate));
         commitment.setAuthorized(authorized);
         commitmentFacade.edit(commitment);
     }

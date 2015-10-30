@@ -55,7 +55,7 @@ public class AddressResource {
         address.setStreetName(streetName);
         address.setStreetNumber(streetNumber);
         List<Apartment> addressApartments = new ArrayList<>();
-        address.setApartmentList(addressApartments);
+//        address.setApartmentList(addressApartments);
         addressFacade.create(address);
     }
 
