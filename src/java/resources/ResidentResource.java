@@ -1,9 +1,12 @@
 package resources;
 
 import dtos.ResidencyDTO;
-import entities.ContactInformation;
+import entities.Link;
+import entities.Message;
 import entities.Residency;
 import entities.Resident;
+import exception.DataNotFoundException;
+import exception.InputNotDetectedException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.EJB;
@@ -39,6 +42,9 @@ import utilities.Utility;
 @Path("residents")
 public class ResidentResource {
 
+    @Context
+    UriInfo info;
+
     @EJB
     ApartmentFacadeLocal apartmentFacade;
 
@@ -59,8 +65,8 @@ public class ResidentResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getAllResidents(
-//            @Context Request request
+    public List<Resident> getAllResidents(
+            @Context Request request
     ) {
 
         List<Resident> residents = residentFacade.findAll();
@@ -83,80 +89,138 @@ public class ResidentResource {
 ////        Använd ETag Header i requestet.
 //        builder.cacheControl(cc);
 //        return builder.build();
-    return Response.ok().entity(residents).build();
-    
+//    return Response.ok().entity(residents).build();
+        return residents;
+
     }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{residentId: \\d+}")
-    public Resident getOneResidentById(@PathParam("residentId") int residentId) {
+    public Response getOneResidentById(
+            @PathParam("residentId") int residentId,
+            @Context Request request
+    ) {
         Resident resident = residentFacade.find(residentId);
-        return resident;
+        if (resident == null) {
+            throw new DataNotFoundException("Resident with id: " + residentId + " not found!");
+        }
+        CacheControl cc = new CacheControl();
+        cc.setMaxAge(86400);
+        cc.setPrivate(true);
+
+        EntityTag eTag = new EntityTag(Integer.toString(resident.hashCode()));
+        ResponseBuilder builder = request.evaluatePreconditions(eTag);
+        if (builder == null) {
+            builder = Response.ok(resident);
+            builder.tag(eTag);
+        }
+        return builder.build();
     }
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response createResident(
-            //            @FormParam("ssn") String ssn,
-            //            @FormParam("firstName") String firstName,
-            //            @FormParam("lastName") String lastName
-            Resident resident,
-            @Context UriInfo info
+            @FormParam("ssn") String ssn,
+            @FormParam("firstName") String firstName,
+            @FormParam("lastName") String lastName,
+            @Context Request request
     ) {
-//        if (ssn == null) {
-//            return Response.status(Response.Status.BAD_REQUEST)
-//                    .entity("SSN is missing")
-//                    .type(MediaType.TEXT_PLAIN)
-//                    .build();
-//        }
-//        Resident resident = new Resident();
-//        resident.setSsn(ssn);
-//        resident.setFirstName(firstName);
-//        resident.setLastName(lastName);
+        if (ssn == null) {
+            throw new InputNotDetectedException("Social Security Number is missing!");
+        }
+        Resident resident = new Resident();
+        resident.setSsn(ssn);
+        resident.setFirstName(firstName);
+        resident.setLastName(lastName);
         resident = residentFacade.create(resident);
-        return Response.ok(resident, "application/json").build();
+
+        CacheControl cc = new CacheControl();
+        cc.setMaxAge(86400);
+        cc.setPrivate(true);
+
+        EntityTag eTag = new EntityTag(Integer.toString(resident.hashCode()));
+        ResponseBuilder builder = request.evaluatePreconditions(eTag);
+        if (builder == null) {
+            builder = Response.ok(resident);
+            builder.tag(eTag);
+        }
+        return builder.build();
     }
 
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{residentId: \\d+}")
-    public void updateResident(
+    public Response updateResident(
             @PathParam("residentId") int residentId,
-            //            @FormParam("ssn") String ssn,
-            //            @FormParam("firstName") String firstName,
-            //            @FormParam("lastName") String lastName
-            Resident resident
+            @FormParam("ssn") String ssn,
+            @FormParam("firstName") String firstName,
+            @FormParam("lastName") String lastName,
+            @Context Request request
     ) {
+        Resident resident = residentFacade.find(residentId);
+
+        if (resident == null) {
+            throw new DataNotFoundException("Resident with id: " + residentId + " not found!");
+        }
+
         resident.setId(residentId);
-//        Resident resident = getOneResidentById(residentId);
-//        resident.setSsn(ssn);
-//        resident.setFirstName(firstName);
-//        resident.setLastName(lastName);
-        residentFacade.edit(resident);
+        resident.setSsn(ssn);
+        resident.setFirstName(firstName);
+        resident.setLastName(lastName);
+        resident = residentFacade.edit(resident);
+
+        CacheControl cc = new CacheControl();
+        cc.setMaxAge(86400);
+        cc.setPrivate(true);
+
+        EntityTag eTag = new EntityTag(Integer.toString(resident.hashCode()));
+        ResponseBuilder builder = request.evaluatePreconditions(eTag);
+        if (builder == null) {
+            builder = Response.ok(resident);
+            builder.tag(eTag);
+        }
+        return builder.build();
     }
 
     @DELETE
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{residentId: \\d+}")
-    public void deleteResident(@PathParam("residentId") int residentId) {
-        Resident resident = getOneResidentById(residentId);
+    public Response deleteResident(
+            @PathParam("residentId") int residentId,
+            @Context Request request
+    ) {
+        Resident resident = residentFacade.find(residentId);
         residentFacade.remove(resident);
+
+        CacheControl cc = new CacheControl();
+        cc.setMaxAge(86400);
+        cc.setPrivate(true);
+
+        EntityTag eTag = new EntityTag(Integer.toString(resident.hashCode()));
+        ResponseBuilder builder = request.evaluatePreconditions(eTag);
+        Link residentsLink = new Link();
+        String uri = info.getBaseUriBuilder()
+                .path(ResidentResource.class)
+                .build()
+                .toString();
+        
+        if (builder == null) {
+            builder = Response.ok(new Message("Resident with id: " + residentId + "is deleted!", 204, uri));
+            builder.tag(eTag);
+        }
+        return builder.build();
     }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{residentId: \\d+}/residencies")
     public List<ResidencyDTO> getResidenciesByResidentId(
-            @PathParam("residentId") int residentId
-    //            ,
-    //            @QueryParam("year") int year
+            @PathParam("residentId") int residentId,
+            @Context Request request
     ) {
-//
-//        if (year > 0) {
-//        }
         List<Residency> residencies = residencyFacade.findResidentResidencies(residentId);
         List<ResidencyDTO> residencyDTOs = new ArrayList<>();
         for (Residency residency : residencies) {
@@ -170,158 +234,35 @@ public class ResidentResource {
     @Path("{residentId: \\d+}/residencies/{residencyId: \\d+}")
     public Response getResidentResidencyById(
             @PathParam("residentId") int residentId,
-            @PathParam("residencyId") int residencyId
+            @PathParam("residencyId") int residencyId,
+            @Context Request request
     ) {
         Residency residency = residencyFacade.findOneResidentResidency(residentId, residencyId);
-        return Response.ok(residency).build();
+
+        if (residency == null) {
+            throw new DataNotFoundException("Residency with id: " + residentId + " not found!");
+        }
+        CacheControl cc = new CacheControl();
+        cc.setMaxAge(86400);
+        cc.setPrivate(true);
+
+        EntityTag eTag = new EntityTag(Integer.toString(residency.hashCode()));
+        ResponseBuilder builder = request.evaluatePreconditions(eTag);
+        if (builder == null) {
+            builder = Response.ok(residency);
+            builder.tag(eTag);
+        }
+        return builder.build();
     }
 
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
     @Path("{residentId: \\d+}/contactinformation")
-    public Response getResidentContactInformation(
-            @PathParam("residentId") int residentId
-    ) {
-        ContactInformation contactInformation
-                = contactInformationFacade.findResidentContactinformation(residentId);
-
-        return Response.ok(contactInformation).build();
-    }
-
-    @POST
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("{residentId: \\d+}/contactinformation")
-    public void createContactInformation(
-            @PathParam("residentId") int residentId,
-            @FormParam("telephone") String telephone,
-            @FormParam("email") String email
-    ) {
-        ContactInformation contactInformation = new ContactInformation();
-        contactInformation.setResident(residentFacade.find(residentId));
-        contactInformation.setTelephone(telephone);
-        contactInformation.setEmail(email);
-        contactInformationFacade.create(contactInformation);
-        Resident resident = residentFacade.find(residentId);
-//        resident.setContactInformation(contactInformation);
-        residentFacade.edit(resident);
-    }
-
-    @PUT
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @Path("{residentId: \\d+}/contactinformation/{contactInformationId: \\d+}")
-    public void updateContactInformation(
-            @PathParam("residentId") int residentId,
-            @PathParam("contactInformationId") int contactInformationId,
-            @FormParam("telephone") String telephone,
-            @FormParam("email") String email
-    ) {
-        ContactInformation contactInformation
-                = contactInformationFacade.findResidentContactinformation(residentId);
-        contactInformation.setResident(residentFacade.find(residentId));
-        contactInformation.setTelephone(telephone);
-        contactInformation.setEmail(email);
-
-        contactInformationFacade.edit(contactInformation);
-    }
-
-    @DELETE
-    @Path("{residentId: \\d+}/contactinformation/{contactInformationId: \\d+}")
-    public void deleteContactInformation(
-            @PathParam("residentId") int residentId,
-            @PathParam("contactInformationId") int contactInformationId) {
-        ContactInformation contactInformation
-                = contactInformationFacade.findResidentContactinformation(residentId);
-        contactInformationFacade.remove(contactInformation);
+    public ContactInformationResource getContactInformationResource() {
+        return new ContactInformationResource();
     }
 
     @Path("{residentId: \\d+}/commitments")
     @Consumes(MediaType.APPLICATION_JSON)
     public CommitmentResource getCommitmentResource() {
-        return new CommitmentResource(commitmentFacade);
+        return new CommitmentResource();
     }
-
-//    @GET
-//    @Path("{residentId: \\d+}/commitments")
-//    @Produces(MediaType.APPLICATION_JSON)
-//    public List<CommitmentDTO> getCommitmentsByResident(@PathParam("residentId") int residentId) {
-//        List<Commitment> residentCommitments = new ArrayList<>();
-//        residentCommitments = commitmentFacade.findResidentCommitments(residentId);
-//        List<CommitmentDTO> commitmentDTOs = new ArrayList<>();
-//        residentCommitments.stream().forEach((c) -> {
-//            commitmentDTOs.add(Utility.convertCommitmentToDTO(c));
-//        });
-//        return commitmentDTOs;
-//    }
-//
-//    @GET
-//    @Produces(MediaType.APPLICATION_JSON)
-//    @Path("{residentId: \\d+}/commitments/{commitmentId: \\d+}")
-//    public Response getResidentCommitmentById(
-//            @PathParam("residentId") int residentId,
-//            @PathParam("commitmentId") int commitmentId
-//    ) {
-//        Commitment commitment = commitmentFacade.findOneResidentCommitment(residentId, commitmentId);
-//        CommitmentDTO commitmentDTO = Utility.convertCommitmentToDTO(commitment);
-//        return Response.ok(commitmentDTO).build();
-//    }
-//
-//    @POST
-//    @Path("{residentId: \\d+}/commitments")
-//    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-//    @Produces(MediaType.APPLICATION_JSON)
-//    public void createCommitment(
-//            @PathParam("residentId") int residentId,
-//            //            CommitmentDTO2 com
-//            @FormParam("role") String role,
-//            @FormParam("fromDate") String fromDate,
-//            @FormParam("toDate") String toDate,
-//            @FormParam("authorized") String authorized,
-//            @Context HttpHeaders headers
-//    ) {
-//        Commitment commitment = new Commitment();
-//
-//        commitment.setResident(residentFacade.find(residentId));
-//        commitment.setRole(role);
-//        commitment.setFromDate(Utility.parseStringToDate(fromDate));
-//        commitment.setToDate(Utility.parseStringToDate(toDate));
-////        commitment.setFromDate(Date.from(com.getFromDate().atStartOfDay(ZoneId.systemDefault()).toInstant()));
-////        commitment.setToDate(Date.from(com.getToDate().atStartOfDay(ZoneId.systemDefault()).toInstant()));
-//        if ("true".equals(authorized)) {
-//            commitment.setAuthorized(true);
-//        }
-//
-//        commitmentFacade.create(commitment);
-//    }
-//
-//    @PUT
-//    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-//    @Produces(MediaType.APPLICATION_JSON)
-//    @Path("{residentId: \\d+}/commitments/{commitmentId: \\d+}")
-//    public void updateCommitment(
-//            @PathParam("residentId") int residentId,
-//            @PathParam("commitmentId") int commitmentId,
-//            @FormParam("role") String role,
-//            @FormParam("startDate") String startDate,
-//            @FormParam("endDate") String endDate,
-//            @FormParam("authorized") boolean authorized
-//    ) {
-//        Commitment commitment = commitmentFacade.find(commitmentId);
-//        commitment.setResident(residentFacade.find(residentId));
-//        commitment.setRole(role);
-//        commitment.setFromDate(Utility.parseStringToDate(startDate));
-//        commitment.setToDate(Utility.parseStringToDate(endDate));
-//        commitment.setAuthorized(authorized);
-//        commitmentFacade.edit(commitment);
-//    }
-//
-//    @DELETE
-//    @Path("{residentId: \\d+}/commitments/{commitmentId: \\d+}")
-//    public void deleteCommitment(
-//            @PathParam("residentId") int residentId,
-//            @PathParam("commitmentId") int commitmentId
-//    ) {
-//        Commitment commitment = commitmentFacade.findOneResidentCommitment(residentId, commitmentId);
-//        commitmentFacade.remove(commitment);
-//    }
 }
