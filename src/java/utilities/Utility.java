@@ -4,6 +4,7 @@ import dtos.CommitmentDTO;
 import dtos.ResidencyDTO;
 import entities.Commitment;
 import entities.Residency;
+import exception.DataNotFoundException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -60,4 +61,13 @@ public class Utility {
         commitmentDTO.setAuthorized(commitment.getAuthorized());
         return commitmentDTO;
     }
+
+    public void setResponseForEntity() {
+
+    }
+
+//    public void throwNotFoundException(String identifier, int id) {
+//        throw new DataNotFoundException(identifier);
+//    }
+
 }
