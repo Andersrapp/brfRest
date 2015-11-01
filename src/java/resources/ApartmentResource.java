@@ -4,6 +4,7 @@ import dtos.ResidencyDTO;
 import entities.Address;
 import entities.Apartment;
 import entities.Residency;
+import exception.DataNotFoundException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,9 +18,13 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.UriInfo;
 import services.AddressFacadeLocal;
 import services.ApartmentFacadeLocal;
@@ -51,37 +56,73 @@ public class ApartmentResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("{apartmentId: \\d+}")
+    @Path("{apartmentId}")
+    public Response getApartmentById(@PathParam("apartmentId") int apartmentId,
+            @Context Request request) {
+        Apartment apartment = new Apartment();
+        try {
+            apartment = apartmentFacade.find(apartmentId);
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
 
-    public Response getApartmentById(@PathParam("apartmentId") int apartmentId) {
-        Apartment apartment = apartmentFacade.find(apartmentId);
-        URI location
-                = info.getAbsolutePathBuilder().build();
+        if (apartment == null) {
+            throw new DataNotFoundException("Apartment with id: " + apartmentId + " is not found!");
+        }
 
-        return Response.created(location).entity(apartment).build();
+        CacheControl cc = new CacheControl();
+        cc.setMaxAge(86400);
+        cc.setPrivate(true);
 
-//        return apartment;
+        EntityTag eTag = new EntityTag(Integer.toString(apartment.hashCode()));
+        ResponseBuilder builder = request.evaluatePreconditions(eTag);
+        if (builder == null) {
+            builder = Response.ok(apartment);
+            builder.tag(eTag);
+        }
+        builder.cacheControl(cc);
+
+//        URI location
+//                = info.getAbsolutePathBuilder().build();
+//        builder.link(location, "self");
+//        System.out.println("Location link: " + location);
+
+        return builder.build();
     }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<Apartment> getAllApartments() {
+    public Response getAllApartments(
+            @Context Request request
+    ) {
         List<Apartment> apartments = apartmentFacade.findAll();
-        return apartments;
+        if (apartments == null) {
+            throw new DataNotFoundException("Apartments not found!");
+        }
+        CacheControl cc = new CacheControl();
+        cc.setMaxAge(86400);
+        cc.setPrivate(true);
+
+        int hashValue = 0;
+//        hashValue = apartments.stream().map((apartment) -> apartment.hashCode()).reduce(hashValue, Integer::sum);
+        hashValue = apartments.stream().map((apartment) -> apartment.hashCode()).reduce(hashValue, Integer::sum);
+
+        EntityTag eTag = new EntityTag(Integer.toString(hashValue));
+
+        ResponseBuilder builder = request.evaluatePreconditions(eTag);
+        if (builder == null) {
+            builder = Response.ok(apartments);
+            builder.tag(eTag);
+        }
+
+        builder.cacheControl(cc);
+
+
+        return builder.build();
     }
-    
-//    @GET
-//    @Produces(MediaType.APPLICATION_JSON)
-//    public Response getAllApartments2() {
-//        List<Apartment> apartments = apartmentFacade.findAll();
-//        URI location
-//                = info.getAbsolutePathBuilder().build();
-//
-//        return Response.ok(location).entity(apartments).build();
-//    }
 
     @POST
-//    @Path("/")
+    @Path("/")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
     public Response createApartment(
@@ -95,6 +136,10 @@ public class ApartmentResource {
         Apartment apartment = new Apartment();
         apartment.setApartmentNumber(apartmentNumber);
         Address address = addressFacade.find(addressId);
+        if (address == null) {
+            throw new DataNotFoundException("Address with id: " + addressId + " is not found!");
+        }
+
         apartment.setAddress(address);
         apartment.setArea(area);
         apartment.setFloorCode(floorCode);
@@ -105,6 +150,10 @@ public class ApartmentResource {
                 = info.getAbsolutePathBuilder()
                 .path(getClass(), "getApartmentById")
                 .build(apartment.getId());
+        CacheControl cc = new CacheControl();
+
+        cc.setMaxAge(86400);
+        cc.setPrivate(true);
 
         return Response.created(location).entity(apartment).build();
     }
@@ -125,12 +174,19 @@ public class ApartmentResource {
         Apartment apartment = apartmentFacade.find(apartmentId);
         apartment.setApartmentNumber(apartmentNumber);
         Address address = addressFacade.find(addressId);
+        if (address == null) {
+            throw new DataNotFoundException("Address with id: " + addressId + " is not found!");
+        }
         apartment.setAddress(address);
         apartment.setRoomCount(roomCount);
         apartment.setShare(share);
         apartment.setArea(area);
         apartment.setFloorCode(floorCode);
         apartment = apartmentFacade.edit(apartment);
+        if (apartment == null) {
+            throw new DataNotFoundException("Apartment with id: " + apartmentId + " is not found!");
+        }
+
         URI location
                 = info.getAbsolutePathBuilder()
                 .build();
@@ -144,22 +200,41 @@ public class ApartmentResource {
     @Path("{apartmentId: \\d+}")
     public void deleteApartment(@PathParam("apartmentId") int apartmentId) {
         Apartment apartment = apartmentFacade.find(apartmentId);
-        apartment.setAddress(null);
-//        apartment.setResidencyList(null);
+        if (apartment == null) {
+            throw new DataNotFoundException("Apartment with id: " + apartmentId + " is not found!");
+        }
+//        apartment.setAddress(null);
         apartmentFacade.remove(apartment);
     }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{apartmentId: \\d+}/residencies")
-    public List<ResidencyDTO> getApartmentResidencies(
-            @PathParam("apartmentId") int apartmentId) {
+    public Response getApartmentResidencies(
+            @PathParam("apartmentId") int apartmentId,
+            @Context Request request
+    ) {
         List<Residency> apartmentResidencies = residencyFacade.findResidenciesByApartment(apartmentId);
         List<ResidencyDTO> residencyDTOs = new ArrayList<>();
-        for (Residency r : apartmentResidencies) {
-            residencyDTOs.add(Utility.convertResidencyToDTO(r));
+        int hashValue = 0;
+        for (Residency residency : apartmentResidencies) {
+            ResidencyDTO residencyDTO = Utility.convertResidencyToDTO(residency);
+            hashValue += residencyDTO.hashCode();
+            residencyDTOs.add(residencyDTO);
         }
-        return residencyDTOs;
+        CacheControl cc = new CacheControl();
+        cc.setMaxAge(86400);
+        cc.setPrivate(true);
+
+        EntityTag eTag = new EntityTag(Integer.toString(hashValue));
+        ResponseBuilder builder = request.evaluatePreconditions(eTag);
+
+        if (builder == null) {
+            builder = Response.ok(residencyDTOs);
+            builder.tag(eTag);
+        }
+        builder.cacheControl(cc);
+        return builder.build();
     }
 
     @GET
@@ -167,11 +242,30 @@ public class ApartmentResource {
     @Path("{apartmentId: \\d+}/residencies/{residencyId: \\d+}")
     public Response getApartmentResidencyById(
             @PathParam("apartmentId") int apartmentId,
-            @PathParam("residencyId") int residencyId
+            @PathParam("residencyId") int residencyId,
+            @Context Request request
     ) {
         Residency residency = residencyFacade.findOneApartmentResidency(apartmentId, residencyId);
+        if (residency == null) {
+            throw new DataNotFoundException(
+                    "Residency with id: " + residencyId + " under apartment with id: " + apartmentId + " is not found!");
+        }
+
+        CacheControl cc = new CacheControl();
+        cc.setMaxAge(86400);
+        cc.setPrivate(true);
+
         ResidencyDTO residencyDTO = Utility.convertResidencyToDTO(residency);
-        return Response.ok(residencyDTO).build();
+        EntityTag eTag = new EntityTag(Integer.toString(residencyDTO.hashCode()));
+        ResponseBuilder builder = request.evaluatePreconditions(eTag);
+
+        if (builder == null) {
+            builder = Response.ok(residency);
+            builder.tag(eTag);
+        }
+        builder.cacheControl(cc);
+
+        return builder.build();
     }
 
     @POST

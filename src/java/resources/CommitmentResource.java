@@ -33,7 +33,6 @@ import utilities.Utility;
  *
  * @author Anders
  */
-@Path("/")
 @Produces(MediaType.APPLICATION_JSON)
 public class CommitmentResource {
 
@@ -50,20 +49,24 @@ public class CommitmentResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<CommitmentDTO> getCommitmentsByResident(
+    public List<Commitment> getCommitmentsByResident(
             @PathParam("residentId") int residentId
     ) {
-        List<Commitment> residentCommitments = new ArrayList<>();
-
-        residentCommitments = commitmentFacade.findResidentCommitments(residentId);
+        List<Commitment> residentCommitments = commitmentFacade.findResidentCommitments(residentId);
         if (residentCommitments == null) {
             throw new DataNotFoundException("Resident with id: " + residentId + " has no commitments!");
         }
+
+        int hashValue = 0;
         List<CommitmentDTO> commitmentDTOs = new ArrayList<>();
-        residentCommitments.stream().forEach((c) -> {
-            commitmentDTOs.add(Utility.convertCommitmentToDTO(c));
-        });
-        return commitmentDTOs;
+        for (Commitment commitment : residentCommitments) {
+            CommitmentDTO commitmentDTO = Utility.convertCommitmentToDTO(commitment);
+            hashValue += commitmentDTO.hashCode();
+            hashValue += commitment.hashCode();
+
+            commitmentDTOs.add(commitmentDTO);
+        }
+        return residentCommitments;
     }
 
     @GET
@@ -87,7 +90,7 @@ public class CommitmentResource {
         EntityTag eTag = new EntityTag(Integer.toString(commitmentDTO.hashCode()));
         Response.ResponseBuilder builder = request.evaluatePreconditions(eTag);
         if (builder == null) {
-            builder = Response.ok("Resident with id: " + residentId + " is deleted!");
+            builder = Response.ok(commitmentDTO);
             builder.tag(eTag);
         }
         return builder.build();
@@ -95,7 +98,7 @@ public class CommitmentResource {
 
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-//    @Produces(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     public void createCommitment(
             @PathParam("residentId") int residentId,
             //            CommitmentDTO2 com
@@ -107,15 +110,12 @@ public class CommitmentResource {
     ) {
         Commitment commitment = new Commitment();
 
-//        residentFacade = 
         commitment.setResident(residentFacade.find(residentId));
         commitment.setRole(role);
         commitment.setFromDate(Utility.parseStringToDate(fromDate));
         if (toDate != null) {
             commitment.setToDate(Utility.parseStringToDate(toDate));
         }
-//        commitment.setFromDate(Date.from(com.getFromDate().atStartOfDay(ZoneId.systemDefault()).toInstant()));
-//        commitment.setToDate(Date.from(com.getToDate().atStartOfDay(ZoneId.systemDefault()).toInstant()));
         if ("true".equals(authorized)) {
             commitment.setAuthorized(true);
         }

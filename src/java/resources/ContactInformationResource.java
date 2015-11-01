@@ -1,7 +1,7 @@
 package resources;
 
 import entities.ContactInformation;
-import entities.Resident;
+import exception.DataNotFoundException;
 import javax.ejb.EJB;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -12,8 +12,13 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.CacheControl;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.ResponseBuilder;
 import services.ContactInformationFacadeLocal;
 import services.ResidentFacadeLocal;
 import utilities.JNDIUtility;
@@ -22,7 +27,6 @@ import utilities.JNDIUtility;
  *
  * @author Anders
  */
-@Path("/")
 public class ContactInformationResource {
 
     @EJB
@@ -39,30 +43,59 @@ public class ContactInformationResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getResidentContactInformation(
-            @PathParam("residentId") int residentId
+            @PathParam("residentId") int residentId,
+            @Context Request request
     ) {
         ContactInformation contactInformation
                 = contactInformationFacade.findResidentContactinformation(residentId);
 
-        return Response.ok(contactInformation).build();
+        if (contactInformation == null) {
+            throw new DataNotFoundException("ContactInformation for resident id: " + residentId + " is not found!");
+        }
+
+        CacheControl cc = new CacheControl();
+        cc.setMaxAge(86400);
+        cc.setPrivate(true);
+
+        EntityTag eTag = new EntityTag(Integer.toString(contactInformation.hashCode()));
+        ResponseBuilder builder = request.evaluatePreconditions(eTag);
+        if (builder == null) {
+            builder = Response.ok(contactInformation);
+            builder.tag(eTag);
+        }
+
+        builder.cacheControl(cc);
+        return builder.build();
     }
 
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
-    public void createContactInformation(
+    public Response createContactInformation(
             @PathParam("residentId") int residentId,
             @FormParam("telephone") String telephone,
-            @FormParam("email") String email
+            @FormParam("email") String email,
+            @Context Request request
     ) {
         ContactInformation contactInformation = new ContactInformation();
         contactInformation.setResident(residentFacade.find(residentId));
         contactInformation.setTelephone(telephone);
         contactInformation.setEmail(email);
         contactInformationFacade.create(contactInformation);
-        Resident resident = residentFacade.find(residentId);
-//        resident.setContactInformation(contactInformation);
-        residentFacade.edit(resident);
+
+        CacheControl cc = new CacheControl();
+        cc.setMaxAge(86400);
+        cc.setPrivate(true);
+
+        EntityTag eTag = new EntityTag(Integer.toString(contactInformation.hashCode()));
+
+        ResponseBuilder builder = request.evaluatePreconditions(eTag);
+        if (builder == null) {
+            builder = Response.ok(contactInformation);
+            builder.tag(eTag);
+        }
+        builder.cacheControl(cc);
+        return builder.build();
     }
 
     @PUT
@@ -90,6 +123,9 @@ public class ContactInformationResource {
             @PathParam("contactInformationId") int contactInformationId) {
         ContactInformation contactInformation
                 = contactInformationFacade.findResidentContactinformation(residentId);
+        if (contactInformation == null) {
+            throw new DataNotFoundException("ContactInformation with id: " + contactInformationId + " is not found!");
+        }
         contactInformationFacade.remove(contactInformation);
     }
 

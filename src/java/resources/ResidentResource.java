@@ -1,8 +1,6 @@
 package resources;
 
 import dtos.ResidencyDTO;
-import entities.Link;
-import entities.Message;
 import entities.Residency;
 import entities.Resident;
 import exception.DataNotFoundException;
@@ -65,33 +63,29 @@ public class ResidentResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<Resident> getAllResidents(
+    public Response getAllResidents(
             @Context Request request
     ) {
 
         List<Resident> residents = residentFacade.findAll();
-//        int hashValue = 0;
-//
-//        for (Resident resident : residents) {
-//            hashValue += resident.hashCode();
-//        }
-////        hashValue = residents.hashCode();
-//        CacheControl cc = new CacheControl();
-//        cc.setMaxAge(86400);
-//        cc.setPrivate(true);
-//
-//        EntityTag eTag = new EntityTag(Integer.toString(hashValue));
-//       ResponseBuilder builder = request.evaluatePreconditions(eTag);
-//        if (builder == null) {
-//            builder = Response.ok(residents);
-//            builder.tag(eTag);
-//        }
-////        Använd ETag Header i requestet.
-//        builder.cacheControl(cc);
-//        return builder.build();
-//    return Response.ok().entity(residents).build();
-        return residents;
+        int hashValue = 0;
 
+        for (Resident resident : residents) {
+            hashValue += resident.hashCode();
+        }
+        CacheControl cc = new CacheControl();
+        cc.setMaxAge(86400);
+        cc.setPrivate(true);
+
+        EntityTag eTag = new EntityTag(Integer.toString(hashValue));
+        ResponseBuilder builder = request.evaluatePreconditions(eTag);
+        if (builder == null) {
+            builder = Response.ok(residents);
+            builder.tag(eTag);
+        }
+//        Använd ETag Header i requestet.
+        builder.cacheControl(cc);
+        return builder.build();
     }
 
     @GET
@@ -119,7 +113,7 @@ public class ResidentResource {
     }
 
     @POST
-    @Consumes(MediaType.APPLICATION_JSON)
+//    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
     public Response createResident(
             @FormParam("ssn") String ssn,
@@ -188,50 +182,53 @@ public class ResidentResource {
     @DELETE
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{residentId: \\d+}")
-    public Response deleteResident(
+    public void deleteResident(
             @PathParam("residentId") int residentId,
             @Context Request request
     ) {
         Resident resident = residentFacade.find(residentId);
         residentFacade.remove(resident);
 
-        CacheControl cc = new CacheControl();
-        cc.setMaxAge(86400);
-        cc.setPrivate(true);
-
-        EntityTag eTag = new EntityTag(Integer.toString(resident.hashCode()));
-        ResponseBuilder builder = request.evaluatePreconditions(eTag);
-        Link residentsLink = new Link();
-        String uri = info.getBaseUriBuilder()
-                .path(ResidentResource.class)
-                .build()
-                .toString();
-        
-        if (builder == null) {
-            builder = Response.ok(new Message("Resident with id: " + residentId + "is deleted!", 204, uri));
-            builder.tag(eTag);
-        }
-        return builder.build();
     }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{residentId: \\d+}/residencies")
-    public List<ResidencyDTO> getResidenciesByResidentId(
+    public Response getResidenciesByResidentId(
             @PathParam("residentId") int residentId,
             @Context Request request
     ) {
+        int hashValue = 0;
         List<Residency> residencies = residencyFacade.findResidentResidencies(residentId);
         List<ResidencyDTO> residencyDTOs = new ArrayList<>();
+        ResidencyDTO residencyDTO;
         for (Residency residency : residencies) {
-            residencyDTOs.add(Utility.convertResidencyToDTO(residency));
+            residencyDTO = Utility.convertResidencyToDTO(residency);
+            residencyDTOs.add(residencyDTO);
+            hashValue += residencyDTO.hashCode();
+            hashValue += residency.hashCode();
+
         }
-        return residencyDTOs;
+        CacheControl cc = new CacheControl();
+        cc.setMaxAge(86400);
+        cc.setPrivate(true);
+
+        EntityTag eTag = new EntityTag(Integer.toString(hashValue));
+        ResponseBuilder builder = request.evaluatePreconditions(eTag);
+        if (builder == null) {
+//            builder = Response.ok(residencyDTOs);
+            builder = Response.ok(residencies);
+            builder.tag(eTag);
+        }
+//        Använd ETag Header i requestet.
+        builder.cacheControl(cc);
+        return builder.build();
+
     }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("{residentId: \\d+}/residencies/{residencyId: \\d+}")
+    @Path("{residentId:  \\d+}/residencies/{residencyId: \\d+}")
     public Response getResidentResidencyById(
             @PathParam("residentId") int residentId,
             @PathParam("residencyId") int residencyId,

@@ -46,8 +46,6 @@ public class Address implements Serializable {
     @Size(max = 5)
     @Column(name = "streetNumber")
     private String streetNumber;
-//    @OneToMany(cascade = CascadeType.ALL, mappedBy = "address")
-//    private List<Apartment> apartmentList;
 
     public Address() {
     }
@@ -87,15 +85,6 @@ public class Address implements Serializable {
     public void setStreetNumber(String streetNumber) {
         this.streetNumber = streetNumber;
     }
-
-//    @XmlTransient
-//    public List<Apartment> getApartmentList() {
-//        return apartmentList;
-//    }
-//
-//    public void setApartmentList(List<Apartment> apartmentList) {
-//        this.apartmentList = apartmentList;
-//    }
 
     @Override
     public int hashCode() {

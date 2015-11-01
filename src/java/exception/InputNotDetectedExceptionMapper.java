@@ -15,8 +15,11 @@ public class InputNotDetectedExceptionMapper implements ExceptionMapper<InputNot
 
     @Override
     public Response toResponse(InputNotDetectedException exception) {
-        Message errorMessage = new Message(exception.getMessage(), 404, "http://hmpg.net/");
-        return Response.status(Status.NOT_FOUND).entity(errorMessage).build();
+        String uri;
+        Message errorMessage = new Message(exception.getMessage(), 400, "http://hmpg.net/");
+        return Response.status(Status.BAD_REQUEST).entity(errorMessage).build();
     }
+    
+    
 
 }
