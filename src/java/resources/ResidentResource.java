@@ -206,8 +206,7 @@ public class ResidentResource {
             residencyDTO = Utility.convertResidencyToDTO(residency);
             residencyDTOs.add(residencyDTO);
             hashValue += residencyDTO.hashCode();
-            hashValue += residency.hashCode();
-
+//            hashValue += residency.hashCode();
         }
         CacheControl cc = new CacheControl();
         cc.setMaxAge(86400);
@@ -217,7 +216,7 @@ public class ResidentResource {
         ResponseBuilder builder = request.evaluatePreconditions(eTag);
         if (builder == null) {
 //            builder = Response.ok(residencyDTOs);
-            builder = Response.ok(residencies);
+            builder = Response.ok(residencyDTOs);
             builder.tag(eTag);
         }
 //        Använd ETag Header i requestet.

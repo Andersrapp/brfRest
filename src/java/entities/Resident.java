@@ -1,6 +1,7 @@
 package entities;
 
 import java.io.Serializable;
+import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -10,10 +11,12 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -29,7 +32,6 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Resident.findByFirstName", query = "SELECT r FROM Resident r WHERE r.firstName = :firstName"),
     @NamedQuery(name = "Resident.findByLastName", query = "SELECT r FROM Resident r WHERE r.lastName = :lastName")})
 public class Resident implements Serializable {
-
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,12 +47,12 @@ public class Resident implements Serializable {
     @Size(max = 20)
     @Column(name = "lastName")
     private String lastName;
-//    @OneToMany(cascade = CascadeType.ALL, mappedBy = "resident")
-//    private List<Residency> residencyList;
-//    @OneToMany(mappedBy = "resident")
-//    private List<Commitment> commitmentList;
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "resident")
-    private ContactInformation contactinformation;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "resident")
+    private List<Residency> residencyList;
+    @OneToMany(mappedBy = "resident")
+    private List<Commitment> commitmentList;
+//    @OneToOne(cascade = CascadeType.ALL, mappedBy = "resident")
+//    private ContactInformation contactinformation;
 
     public Resident() {
     }
@@ -91,31 +93,31 @@ public class Resident implements Serializable {
         this.lastName = lastName;
     }
 
-//    @XmlTransient
-//    public List<Residency> getResidencyList() {
-//        return residencyList;
-//    }
-//
-//    public void setResidencyList(List<Residency> residencyList) {
-//        this.residencyList = residencyList;
-//    }
-//
-//    @XmlTransient
-//    public List<Commitment> getCommitmentList() {
-//        return commitmentList;
-//    }
-//
-//    public void setCommitmentList(List<Commitment> commitmentList) {
-//        this.commitmentList = commitmentList;
-//    }
-
-    public ContactInformation getContactinformation() {
-        return contactinformation;
+    @XmlTransient
+    public List<Residency> getResidencyList() {
+        return residencyList;
     }
 
-    public void setContactinformation(ContactInformation contactinformation) {
-        this.contactinformation = contactinformation;
+    public void setResidencyList(List<Residency> residencyList) {
+        this.residencyList = residencyList;
     }
+
+    @XmlTransient
+    public List<Commitment> getCommitmentList() {
+        return commitmentList;
+    }
+
+    public void setCommitmentList(List<Commitment> commitmentList) {
+        this.commitmentList = commitmentList;
+    }
+
+//    public ContactInformation getContactinformation() {
+//        return contactinformation;
+//    }
+//
+//    public void setContactinformation(ContactInformation contactinformation) {
+//        this.contactinformation = contactinformation;
+//    }
 
     @Override
     public int hashCode() {

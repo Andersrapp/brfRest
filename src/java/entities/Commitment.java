@@ -18,7 +18,6 @@ import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -39,6 +38,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Commitment.findOneResidentCommitment",
             query = "SELECT c FROM Commitment c WHERE c.id = :commitmentId AND c.resident.id = :residentId")
 })
+
 public class Commitment implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -122,7 +122,6 @@ public class Commitment implements Serializable {
         this.authorized = authorized;
     }
 
-    @XmlTransient
     public Resident getResident() {
         return resident;
     }

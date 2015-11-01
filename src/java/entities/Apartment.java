@@ -1,9 +1,7 @@
 package entities;
 
 import java.io.Serializable;
-import java.util.List;
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -13,11 +11,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -56,8 +52,8 @@ public class Apartment implements Serializable {
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Column(name = "share")
     private Float share;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "apartment")
-    private List<Residency> residencyList;
+//    @OneToMany(cascade = CascadeType.ALL, mappedBy = "apartment")
+//    private List<Residency> residencyList;
     @JoinColumn(name = "address", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Address address;
@@ -123,14 +119,14 @@ public class Apartment implements Serializable {
         this.share = share;
     }
 
-    @XmlTransient
-    public List<Residency> getResidencyList() {
-        return residencyList;
-    }
-
-    public void setResidencyList(List<Residency> residencyList) {
-        this.residencyList = residencyList;
-    }
+//    @XmlTransient
+//    public List<Residency> getResidencyList() {
+//        return residencyList;
+//    }
+//
+//    public void setResidencyList(List<Residency> residencyList) {
+//        this.residencyList = residencyList;
+//    }
 
     public Address getAddress() {
         return address;
@@ -164,5 +160,5 @@ public class Apartment implements Serializable {
     public String toString() {
         return "entities.Apartment[ id=" + id + " ]";
     }
-    
+
 }

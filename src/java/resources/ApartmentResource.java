@@ -5,7 +5,6 @@ import entities.Address;
 import entities.Apartment;
 import entities.Residency;
 import exception.DataNotFoundException;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.EJB;
@@ -25,11 +24,12 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
-import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.core.Response.Status;
 import services.AddressFacadeLocal;
 import services.ApartmentFacadeLocal;
 import services.ResidencyFacadeLocal;
 import services.ResidentFacadeLocal;
+import utilities.JNDIUtility;
 import utilities.Utility;
 
 /**
@@ -39,7 +39,7 @@ import utilities.Utility;
 @Path("apartments")
 public class ApartmentResource {
 
-    @EJB
+    @EJB(lookup = "java:global/BrfREST/ApartmentFacade!services.ApartmentFacadeLocal")
     ApartmentFacadeLocal apartmentFacade;
 
     @EJB
@@ -48,23 +48,19 @@ public class ApartmentResource {
     @EJB
     ResidencyFacadeLocal residencyFacade;
 
-    @EJB
+    @EJB(lookup = "java:global/BrfREST/ResidentFacade!services.ResidentFacadeLocal")
     ResidentFacadeLocal residentFacade;
-
-    @Context
-    UriInfo info;
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{apartmentId}")
     public Response getApartmentById(@PathParam("apartmentId") int apartmentId,
             @Context Request request) {
-        Apartment apartment = new Apartment();
-        try {
-            apartment = apartmentFacade.find(apartmentId);
-        } catch (NullPointerException e) {
-            e.printStackTrace();
-        }
+
+        Apartment apartment;
+
+        apartmentFacade = JNDIUtility.checkJNDI(apartmentFacade);
+        apartment = apartmentFacade.find(apartmentId);
 
         if (apartment == null) {
             throw new DataNotFoundException("Apartment with id: " + apartmentId + " is not found!");
@@ -73,29 +69,26 @@ public class ApartmentResource {
         CacheControl cc = new CacheControl();
         cc.setMaxAge(86400);
         cc.setPrivate(true);
-
         EntityTag eTag = new EntityTag(Integer.toString(apartment.hashCode()));
         ResponseBuilder builder = request.evaluatePreconditions(eTag);
         if (builder == null) {
             builder = Response.ok(apartment);
             builder.tag(eTag);
         }
-        builder.cacheControl(cc);
-
-//        URI location
-//                = info.getAbsolutePathBuilder().build();
-//        builder.link(location, "self");
-//        System.out.println("Location link: " + location);
+//        builder.cacheControl(cc);
 
         return builder.build();
     }
 
     @GET
+    @Path("/")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAllApartments(
             @Context Request request
     ) {
-        List<Apartment> apartments = apartmentFacade.findAll();
+        List<Apartment> apartments = new ArrayList<>();
+        apartments = apartmentFacade.findAll();
+
         if (apartments == null) {
             throw new DataNotFoundException("Apartments not found!");
         }
@@ -117,12 +110,10 @@ public class ApartmentResource {
 
         builder.cacheControl(cc);
 
-
         return builder.build();
     }
 
     @POST
-    @Path("/")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
     public Response createApartment(
@@ -146,16 +137,12 @@ public class ApartmentResource {
         apartment.setRoomCount(roomCount);
         apartment.setShare(share);
         apartment = apartmentFacade.create(apartment);
-        URI location
-                = info.getAbsolutePathBuilder()
-                .path(getClass(), "getApartmentById")
-                .build(apartment.getId());
-        CacheControl cc = new CacheControl();
 
+        CacheControl cc = new CacheControl();
         cc.setMaxAge(86400);
         cc.setPrivate(true);
 
-        return Response.created(location).entity(apartment).build();
+        return Response.status(Status.CREATED).entity(apartment).build();
     }
 
     @PUT
@@ -187,12 +174,7 @@ public class ApartmentResource {
             throw new DataNotFoundException("Apartment with id: " + apartmentId + " is not found!");
         }
 
-        URI location
-                = info.getAbsolutePathBuilder()
-                .build();
-
-        return Response.ok().entity(apartment).
-                link(location, "self").build();
+        return Response.ok().entity(apartment).build();
     }
 
     @DELETE

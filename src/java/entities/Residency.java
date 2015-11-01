@@ -17,7 +17,6 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -39,6 +38,7 @@ import javax.xml.bind.annotation.XmlTransient;
             query = "SELECT r FROM Residency r WHERE r.resident.id = :residentId"),
     @NamedQuery(name = "Residency.findOneResidentResidency",
             query = "SELECT r FROM Residency r WHERE r.id = :residencyId AND r.resident.id = :residentId")
+
 })
 public class Residency implements Serializable {
 
@@ -99,7 +99,6 @@ public class Residency implements Serializable {
         this.toDate = toDate;
     }
 
-    @XmlTransient
     public Apartment getApartment() {
         return apartment;
     }
@@ -108,7 +107,6 @@ public class Residency implements Serializable {
         this.apartment = apartment;
     }
 
-    @XmlTransient
     public Resident getResident() {
         return resident;
     }

@@ -13,7 +13,6 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -29,6 +28,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "ContactInformation.findByEmail", query = "SELECT c FROM ContactInformation c WHERE c.email = :email"),
     @NamedQuery(name = "ContactInformation.findResidentContactInformation",
             query = "SELECT c FROM ContactInformation c WHERE c.residentId = :residentId")
+
 })
 public class ContactInformation implements Serializable {
 
@@ -80,7 +80,6 @@ public class ContactInformation implements Serializable {
         this.email = email;
     }
 
-    @XmlTransient
     public Resident getResident() {
         return resident;
     }
