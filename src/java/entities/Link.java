@@ -1,14 +1,23 @@
 package entities;
 
+import java.io.Serializable;
+
 /**
  *
  * @author Anders
  */
-public class Link {
+public class Link implements Serializable{
 
     String uri;
     String rel;
-    String requestMethod;
+
+    public Link() {
+    }
+
+    public Link(String uri, String rel) {
+        this.uri = uri;
+        this.rel = rel;
+    }
 
     public String getUri() {
         return uri;
@@ -24,13 +33,5 @@ public class Link {
 
     public void setRel(String rel) {
         this.rel = rel;
-    }
-
-    public String getRequestMethod() {
-        return requestMethod;
-    }
-
-    public void setRequestMethod(String requestMethod) {
-        this.requestMethod = requestMethod;
     }
 }

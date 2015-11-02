@@ -48,6 +48,7 @@ public class ContactInformation implements Serializable {
     @JoinColumn(name = "residentId", referencedColumnName = "id", insertable = false, updatable = false)
     @OneToOne(optional = false)
     private Resident resident;
+    private Link link;
 
     public ContactInformation() {
     }
@@ -86,6 +87,14 @@ public class ContactInformation implements Serializable {
 
     public void setResident(Resident resident) {
         this.resident = resident;
+    }
+
+    public Link getLink() {
+        return link;
+    }
+
+    public void setLink(Link link) {
+        this.link = link;
     }
 
     @Override

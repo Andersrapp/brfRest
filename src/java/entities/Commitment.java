@@ -67,6 +67,7 @@ public class Commitment implements Serializable {
     @JoinColumn(name = "resident", referencedColumnName = "id")
     @ManyToOne
     private Resident resident;
+    private Link link;
 
     public Commitment() {
     }
@@ -128,6 +129,14 @@ public class Commitment implements Serializable {
 
     public void setResident(Resident resident) {
         this.resident = resident;
+    }
+
+    public Link getLink() {
+        return link;
+    }
+
+    public void setLink(Link link) {
+        this.link = link;
     }
 
     @Override

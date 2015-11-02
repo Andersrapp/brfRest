@@ -1,6 +1,7 @@
 package dtos;
 
 import entities.Apartment;
+import entities.Link;
 import entities.Resident;
 import java.time.LocalDate;
 
@@ -15,6 +16,7 @@ public class ResidencyDTO {
     private LocalDate toDate;
     private Apartment apartment;
     private Resident resident;
+    private Link link;
 
     public Integer getId() {
         return id;
@@ -56,4 +58,11 @@ public class ResidencyDTO {
         this.resident = resident;
     }
 
+    public Link getLink() {
+        return link;
+    }
+
+    public void setLink(Link link) {
+        this.link = link;
+    }
 }

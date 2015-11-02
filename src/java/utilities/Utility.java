@@ -3,13 +3,14 @@ package utilities;
 import dtos.CommitmentDTO;
 import dtos.ResidencyDTO;
 import entities.Commitment;
+import entities.Link;
 import entities.Residency;
-import exception.DataNotFoundException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
+import javax.ws.rs.core.UriInfo;
 
 /**
  *
@@ -62,12 +63,18 @@ public class Utility {
         return commitmentDTO;
     }
 
-    public void setResponseForEntity() {
-
+    public static Link getLinkToSelf(int entityId, UriInfo info) {
+        String uri = info.getAbsolutePathBuilder().path(Integer.toString(entityId)).build().toString();
+        return new Link(uri, "self");
     }
 
-//    public void throwNotFoundException(String identifier, int id) {
-//        throw new DataNotFoundException(identifier);
-//    }
+    public static Link getLinkToResource(int entityId, UriInfo info, String rel) {
+        String uri = info.getAbsolutePathBuilder().build().toString();
+        return new Link(uri, rel);
+    }
 
+    public Link getLinkToSubresource(int entityId, UriInfo info, String rel) {
+        String uri = info.getAbsolutePathBuilder().build().toString();
+        return new Link(uri, "child");
+    }
 }

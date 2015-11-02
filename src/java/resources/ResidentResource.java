@@ -20,6 +20,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.EntityTag;
+import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
@@ -79,8 +80,11 @@ public class ResidentResource {
 
         EntityTag eTag = new EntityTag(Integer.toString(hashValue));
         ResponseBuilder builder = request.evaluatePreconditions(eTag);
+        GenericEntity<List<Resident>> residentwrapper = new GenericEntity<List<Resident>>(residents) {
+        };
+
         if (builder == null) {
-            builder = Response.ok(residents);
+            builder = Response.ok(residentwrapper);
             builder.tag(eTag);
         }
 //        Använd ETag Header i requestet.
@@ -206,7 +210,8 @@ public class ResidentResource {
             residencyDTO = Utility.convertResidencyToDTO(residency);
             residencyDTOs.add(residencyDTO);
             hashValue += residencyDTO.hashCode();
-//            hashValue += residency.hashCode();
+            residencyDTO.setLink(Utility.getLinkToSelf(residency.getId(), info));
+
         }
         CacheControl cc = new CacheControl();
         cc.setMaxAge(86400);
@@ -214,9 +219,11 @@ public class ResidentResource {
 
         EntityTag eTag = new EntityTag(Integer.toString(hashValue));
         ResponseBuilder builder = request.evaluatePreconditions(eTag);
+        GenericEntity<List<ResidencyDTO>> residencyDTOswrapper = new GenericEntity<List<ResidencyDTO>>(residencyDTOs) {
+        };
         if (builder == null) {
 //            builder = Response.ok(residencyDTOs);
-            builder = Response.ok(residencyDTOs);
+            builder = Response.ok(residencyDTOswrapper);
             builder.tag(eTag);
         }
 //        Använd ETag Header i requestet.
@@ -238,6 +245,7 @@ public class ResidentResource {
         if (residency == null) {
             throw new DataNotFoundException("Residency with id: " + residentId + " not found!");
         }
+        residency.setLink(Utility.getLinkToSelf(residencyId, info));
         CacheControl cc = new CacheControl();
         cc.setMaxAge(86400);
         cc.setPrivate(true);

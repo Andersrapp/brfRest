@@ -6,8 +6,7 @@ import exception.DataNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.EJB;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
+import javax.validation.constraints.Pattern;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.FormParam;
@@ -20,10 +19,14 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.EntityTag;
+import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.ResponseBuilder;
+import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriInfo;
 import services.CommitmentFacadeLocal;
 import services.ResidentFacadeLocal;
 import utilities.JNDIUtility;
@@ -35,6 +38,9 @@ import utilities.Utility;
  */
 @Produces(MediaType.APPLICATION_JSON)
 public class CommitmentResource {
+
+    @Context
+    UriInfo info;
 
     @EJB
     CommitmentFacadeLocal commitmentFacade;
@@ -49,8 +55,9 @@ public class CommitmentResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<Commitment> getCommitmentsByResident(
-            @PathParam("residentId") int residentId
+    public Response getCommitmentsByResident(
+            @PathParam("residentId") int residentId,
+            @Context Request request
     ) {
         List<Commitment> residentCommitments = commitmentFacade.findResidentCommitments(residentId);
         if (residentCommitments == null) {
@@ -62,11 +69,25 @@ public class CommitmentResource {
         for (Commitment commitment : residentCommitments) {
             CommitmentDTO commitmentDTO = Utility.convertCommitmentToDTO(commitment);
             hashValue += commitmentDTO.hashCode();
-            hashValue += commitment.hashCode();
-
+            commitmentDTO.setLink(Utility.getLinkToSelf(commitmentDTO.getId(), info));
             commitmentDTOs.add(commitmentDTO);
         }
-        return residentCommitments;
+        CacheControl cc = new CacheControl();
+        cc.setMaxAge(86400);
+        cc.setPrivate(true);
+
+        EntityTag eTag = new EntityTag(Integer.toString(hashValue));
+        ResponseBuilder builder = request.evaluatePreconditions(eTag);
+        GenericEntity<List<CommitmentDTO>> commitmentDTOswrapper = new GenericEntity<List<CommitmentDTO>>(commitmentDTOs) {
+        };
+
+        if (builder == null) {
+            builder = Response.ok(commitmentDTOswrapper);
+            builder.tag(eTag);
+        }
+        builder.cacheControl(cc);
+
+        return builder.build();
     }
 
     @GET
@@ -82,6 +103,7 @@ public class CommitmentResource {
             throw new DataNotFoundException("Commitment with id: " + residentId + " is not found!");
         }
         CommitmentDTO commitmentDTO = Utility.convertCommitmentToDTO(commitment);
+        commitmentDTO.setLink(Utility.getLinkToSelf(commitmentDTO.getId(), info));
 
         CacheControl cc = new CacheControl();
         cc.setMaxAge(86400);
@@ -99,14 +121,15 @@ public class CommitmentResource {
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
-    public void createCommitment(
+    public Response createCommitment(
             @PathParam("residentId") int residentId,
             //            CommitmentDTO2 com
             @FormParam("role") String role,
             @FormParam("fromDate") String fromDate,
             @FormParam("toDate") String toDate,
             @FormParam("authorized") String authorized,
-            @Context HttpHeaders headers
+            @Context HttpHeaders headers,
+            @Context Request request
     ) {
         Commitment commitment = new Commitment();
 
@@ -119,56 +142,75 @@ public class CommitmentResource {
         if ("true".equals(authorized)) {
             commitment.setAuthorized(true);
         }
-        commitmentFacade.create(commitment);
+        commitment = commitmentFacade.create(commitment);
+        CommitmentDTO commitmentDTO = Utility.convertCommitmentToDTO(commitment);
+        commitmentDTO.setLink(Utility.getLinkToResource(commitmentDTO.getId(), info, "self"));
+        CacheControl cc = new CacheControl();
+        cc.setMaxAge(86400);
+        cc.setPrivate(true);
+
+        EntityTag eTag = new EntityTag(Integer.toString(commitmentDTO.hashCode()));
+        ResponseBuilder builder = request.evaluatePreconditions(eTag);
+        if (builder == null) {
+            builder = Response.status(Status.CREATED);
+            builder.entity(commitmentDTO);
+            builder.tag(eTag);
+        }
+        builder.cacheControl(cc);
+        return builder.build();
     }
 
     @PUT
-//    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-//    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_FORM_URLENCODED})
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Path("{commitmentId: \\d+}")
-    public void updateCommitment(
+    public Response updateCommitment(
             @PathParam("residentId") int residentId,
             @PathParam("commitmentId") int commitmentId,
             @FormParam("role") String role,
             @FormParam("startDate") String startDate,
             @FormParam("endDate") String endDate,
-            @FormParam("authorized") boolean authorized
+            @FormParam("authorized") boolean authorized,
+            @Context Request request
     ) {
         Commitment commitment = commitmentFacade.find(commitmentId);
         commitment.setResident(residentFacade.find(residentId));
         commitment.setRole(role);
-//        commitment.setFromDate(Utility.parseStringToDate(startDate));
-//        commitment.setToDate(Utility.parseStringToDate(endDate));
         commitment.setAuthorized(authorized);
-        commitmentFacade.edit(commitment);
+        commitment = commitmentFacade.edit(commitment);
+        CommitmentDTO commitmentDTO = Utility.convertCommitmentToDTO(commitment);
+        commitmentDTO.setLink(Utility.getLinkToSelf(commitmentDTO.getId(), info));
+        CacheControl cc = new CacheControl();
+        cc.setMaxAge(86400);
+        cc.setPrivate(true);
+
+        EntityTag eTag = new EntityTag(Integer.toString(commitmentDTO.hashCode()));
+        ResponseBuilder builder = request.evaluatePreconditions(eTag);
+        if (builder == null) {
+            builder = Response.status(Status.OK);
+            builder.entity(commitmentDTO);
+            builder.tag(eTag);
+        }
+        builder.cacheControl(cc);
+        return builder.build();
     }
 
     @DELETE
     @Path("{commitmentId: \\d+}")
-    public void deleteCommitment(
+    public Response deleteCommitment(
+            @Pattern(regexp = "[0-9]+")
             @PathParam("residentId") int residentId,
-            @PathParam("commitmentId") int commitmentId
+            @PathParam("commitmentId")
+            @Pattern(regexp = "[0-9]+") int commitmentId
     ) {
         Commitment commitment = commitmentFacade.findOneResidentCommitment(residentId, commitmentId);
-        commitmentFacade.remove(commitment);
-    }
-//
-//    private void checkJDNIForCommitmentFacade() {
-//        try {
-//            String lookupName = "java:global/BrfREST/CommitmentFacade!services.CommitmentFacadeLocal";
-//            commitmentFacade = (CommitmentFacadeLocal) InitialContext.doLookup(lookupName);
-//        } catch (NamingException e) {
-//            System.out.println("EXCEPTION MESSAGE:::" + e.getMessage());
-//        }
-//    }
-//
-
-    private void checkJDNIforResidentFacade() {
-        try {
-            String lookupName = "java:global/BrfREST/ResidentFacade!services.ResidentFacadeLocal";
-            residentFacade = (ResidentFacadeLocal) InitialContext.doLookup(lookupName);
-        } catch (NamingException e) {
-            System.out.println("EXCEPTION MESSAGE:::" + e.getMessage());
+        if (commitment == null) {
+            throw new DataNotFoundException("Commitment with id: " + commitmentId + " is not found!");
         }
+
+        commitmentFacade.remove(commitment);
+        CommitmentDTO commitmentDTO = Utility.convertCommitmentToDTO(commitment);
+        commitmentDTO.setLink(Utility.getLinkToResource(commitment.getId(), info, "parent"));
+        return Response.ok(commitment).build();
     }
 }

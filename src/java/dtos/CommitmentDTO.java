@@ -1,5 +1,6 @@
 package dtos;
 
+import entities.Link;
 import entities.Resident;
 import java.time.LocalDate;
 
@@ -15,6 +16,7 @@ public class CommitmentDTO {
     private LocalDate toDate;
     private Resident resident;
     private Boolean authorized;
+    private Link link;
 
     public Integer getId() {
         return id;
@@ -62,6 +64,14 @@ public class CommitmentDTO {
 
     public void setAuthorized(Boolean authorized) {
         this.authorized = authorized;
+    }
+
+    public Link getLink() {
+        return link;
+    }
+
+    public void setLink(Link link) {
+        this.link = link;
     }
 
 }

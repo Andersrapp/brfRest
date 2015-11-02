@@ -1,9 +1,7 @@
 package entities;
 
 import java.io.Serializable;
-import java.util.List;
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -11,11 +9,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -31,6 +28,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Address.findByStreetName", query = "SELECT a FROM Address a WHERE a.streetName = :streetName"),
     @NamedQuery(name = "Address.findByStreetNumber", query = "SELECT a FROM Address a WHERE a.streetNumber = :streetNumber")})
 public class Address implements Serializable {
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -48,6 +46,8 @@ public class Address implements Serializable {
     private String streetNumber;
 //    @OneToMany(cascade = CascadeType.ALL, mappedBy = "address")
 //    private List<Apartment> apartmentList;
+    @Transient
+    private Link link;
 
     public Address() {
     }
@@ -97,6 +97,14 @@ public class Address implements Serializable {
 //        this.apartmentList = apartmentList;
 //    }
 
+    public Link getLink() {
+        return link;
+    }
+
+    public void setLink(Link link) {
+        this.link = link;
+    }
+    
     @Override
     public int hashCode() {
         int hash = 0;

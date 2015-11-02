@@ -53,6 +53,7 @@ public class Resident implements Serializable {
     private List<Commitment> commitmentList;
 //    @OneToOne(cascade = CascadeType.ALL, mappedBy = "resident")
 //    private ContactInformation contactinformation;
+    private Link link;
 
     public Resident() {
     }
@@ -111,6 +112,14 @@ public class Resident implements Serializable {
         this.commitmentList = commitmentList;
     }
 
+    public Link getLink() {
+        return link;
+    }
+
+    public void setLink(Link link) {
+        this.link = link;
+    }
+    
 //    public ContactInformation getContactinformation() {
 //        return contactinformation;
 //    }

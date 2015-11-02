@@ -12,6 +12,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -57,6 +58,8 @@ public class Apartment implements Serializable {
     @JoinColumn(name = "address", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Address address;
+    @Transient
+    private Link link;
 
     public Apartment() {
     }
@@ -119,14 +122,13 @@ public class Apartment implements Serializable {
         this.share = share;
     }
 
-//    @XmlTransient
-//    public List<Residency> getResidencyList() {
-//        return residencyList;
-//    }
-//
-//    public void setResidencyList(List<Residency> residencyList) {
-//        this.residencyList = residencyList;
-//    }
+    public Link getLink() {
+        return link;
+    }
+
+    public void setLink(Link link) {
+        this.link = link;
+    }
 
     public Address getAddress() {
         return address;

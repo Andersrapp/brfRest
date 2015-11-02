@@ -20,16 +20,17 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.EntityTag;
+import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriInfo;
 import services.AddressFacadeLocal;
 import services.ApartmentFacadeLocal;
 import services.ResidencyFacadeLocal;
 import services.ResidentFacadeLocal;
-import utilities.JNDIUtility;
 import utilities.Utility;
 
 /**
@@ -39,7 +40,14 @@ import utilities.Utility;
 @Path("apartments")
 public class ApartmentResource {
 
-    @EJB(lookup = "java:global/BrfREST/ApartmentFacade!services.ApartmentFacadeLocal")
+    @Context
+    UriInfo info;
+
+    @Context
+    Request request;
+
+    @EJB
+//        (lookup = "java:global/BrfREST/ApartmentFacade!services.ApartmentFacadeLocal")
     ApartmentFacadeLocal apartmentFacade;
 
     @EJB
@@ -53,18 +61,18 @@ public class ApartmentResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("{apartmentId}")
+    @Path("{apartmentId: \\d+}")
     public Response getApartmentById(@PathParam("apartmentId") int apartmentId,
             @Context Request request) {
 
         Apartment apartment;
 
-        apartmentFacade = JNDIUtility.checkJNDI(apartmentFacade);
+//        apartmentFacade = JNDIUtility.checkJNDI(apartmentFacade);
         apartment = apartmentFacade.find(apartmentId);
-
         if (apartment == null) {
             throw new DataNotFoundException("Apartment with id: " + apartmentId + " is not found!");
         }
+        apartment.setLink(Utility.getLinkToSelf(apartmentId, info));
 
         CacheControl cc = new CacheControl();
         cc.setMaxAge(86400);
@@ -81,37 +89,63 @@ public class ApartmentResource {
     }
 
     @GET
-    @Path("/")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getAllApartments(
-            @Context Request request
-    ) {
-        List<Apartment> apartments = new ArrayList<>();
-        apartments = apartmentFacade.findAll();
-
+    public Response getAllApartments(@Context Request request) {
+        List<Apartment> apartments = apartmentFacade.findAll();
         if (apartments == null) {
             throw new DataNotFoundException("Apartments not found!");
         }
         CacheControl cc = new CacheControl();
         cc.setMaxAge(86400);
         cc.setPrivate(true);
-
+        GenericEntity<List<Apartment>> apartmentsEntity = new GenericEntity<List<Apartment>>(apartments) {
+        };
         int hashValue = 0;
-//        hashValue = apartments.stream().map((apartment) -> apartment.hashCode()).reduce(hashValue, Integer::sum);
-        hashValue = apartments.stream().map((apartment) -> apartment.hashCode()).reduce(hashValue, Integer::sum);
-
-        EntityTag eTag = new EntityTag(Integer.toString(hashValue));
-
-        ResponseBuilder builder = request.evaluatePreconditions(eTag);
-        if (builder == null) {
-            builder = Response.ok(apartments);
-            builder.tag(eTag);
+        for (Apartment apartment : apartments) {
+            hashValue += apartment.hashCode();
+            apartment.setLink(Utility.getLinkToSelf(apartment.getId(), info));
         }
 
+        EntityTag eTag = new EntityTag(Integer.toString(hashValue));
+        ResponseBuilder builder = request.evaluatePreconditions(eTag);
+        if (builder == null) {
+            builder = Response.ok(apartmentsEntity);
+            builder.tag(eTag);
+        }
         builder.cacheControl(cc);
-
         return builder.build();
     }
+//    @GET
+//    @Path("/")
+//    @Produces(MediaType.APPLICATION_JSON)
+//    public Response getAllApartments(
+//            @Context Request request
+//    ) {
+//        System.out.println("före");
+//        List<Apartment> apartments = apartmentFacade.findAll();
+//        System.out.println("efter");
+// 
+//        if (apartments == null) {
+//            throw new DataNotFoundException("Apartments not found!");
+//        }
+//        CacheControl cc = new CacheControl();
+//        cc.setMaxAge(86400);
+//        cc.setPrivate(true);
+//
+//        int hashValue = 0;
+//        GenericEntity<List<Apartment>> apartmentsEntity = new GenericEntity<List<Apartment>>(apartments) {
+//        };
+//
+//        hashValue = apartments.stream().map((apartment) -> apartment.hashCode()).reduce(hashValue, Integer::sum);
+//        EntityTag eTag = new EntityTag(Integer.toString(hashValue));
+//        ResponseBuilder builder = request.evaluatePreconditions(eTag);
+//        if (builder == null) {
+//            builder = Response.ok(apartmentsEntity);
+//            builder.tag(eTag);
+//        }
+//        builder.cacheControl(cc);
+//        return builder.build();
+//    }
 
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -210,9 +244,11 @@ public class ApartmentResource {
 
         EntityTag eTag = new EntityTag(Integer.toString(hashValue));
         ResponseBuilder builder = request.evaluatePreconditions(eTag);
+        GenericEntity<List<ResidencyDTO>> residencyDTOsEntity = new GenericEntity<List<ResidencyDTO>>(residencyDTOs) {
+        };
 
         if (builder == null) {
-            builder = Response.ok(residencyDTOs);
+            builder = Response.ok(residencyDTOsEntity);
             builder.tag(eTag);
         }
         builder.cacheControl(cc);

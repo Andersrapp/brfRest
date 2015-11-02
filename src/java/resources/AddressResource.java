@@ -1,6 +1,7 @@
 package resources;
 
 import entities.Address;
+import entities.Link;
 import exception.DataNotFoundException;
 import java.util.List;
 import javax.ejb.EJB;
@@ -15,11 +16,14 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.EntityTag;
+import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
+import javax.ws.rs.core.UriInfo;
 import services.AddressFacadeLocal;
+import utilities.Utility;
 
 /**
  *
@@ -27,6 +31,9 @@ import services.AddressFacadeLocal;
  */
 @Path("addresses")
 public class AddressResource {
+
+    @Context
+    private UriInfo info;
 
     @EJB
     AddressFacadeLocal addressFacade;
@@ -36,22 +43,25 @@ public class AddressResource {
     public Response getAddresses(
             @Context Request request
     ) {
-        List<Address> allAddresses = addressFacade.findAll();
-        if (allAddresses == null) {
+        List<Address> addresses = addressFacade.findAll();
+        if (addresses == null) {
             throw new DataNotFoundException("Addresses are not found!");
         }
         CacheControl cc = new CacheControl();
         cc.setMaxAge(86400);
         cc.setPrivate(true);
         int hashValue = 0;
-        for (Address address : allAddresses) {
+        for (Address address : addresses) {
             hashValue += address.hashCode();
+            address.setLink(Utility.getLinkToSelf(address.getId(), info));
         }
         EntityTag eTag = new EntityTag(Integer.toString(hashValue));
 
         ResponseBuilder builder = request.evaluatePreconditions(eTag);
+        GenericEntity<List<Address>> addressesEntity = new GenericEntity<List<Address>>(addresses) {
+        };
         if (builder == null) {
-            builder = Response.ok(allAddresses);
+            builder = Response.ok(addressesEntity);
             builder.tag(eTag);
         }
         builder.cacheControl(cc);
@@ -71,6 +81,7 @@ public class AddressResource {
         if (address == null) {
             throw new DataNotFoundException("Address with id: " + addressId + " is not found!");
         }
+        address.setLink(Utility.getLinkToSelf(address.getId(), info));
         CacheControl cc = new CacheControl();
         cc.setMaxAge(86400);
         cc.setPrivate(true);
@@ -99,7 +110,8 @@ public class AddressResource {
         address.setStreetName(streetName);
         address.setStreetNumber(streetNumber);
 
-        addressFacade.create(address);
+        address = addressFacade.create(address);
+        address.setLink(Utility.getLinkToSelf(address.getId(), info));
         CacheControl cc = new CacheControl();
         cc.setMaxAge(86400);
         cc.setPrivate(true);
@@ -126,6 +138,9 @@ public class AddressResource {
             @Context Request request
     ) {
         Address address = addressFacade.find(addressId);
+        if (address == null) {
+            throw new DataNotFoundException("Address with id: " + addressId + " is not found!");
+        }
         address.setCity(city);
         address.setStreetName(streetName);
         address.setStreetNumber(streetNumber);
@@ -133,6 +148,7 @@ public class AddressResource {
         if (address == null) {
             throw new DataNotFoundException("Address with id: " + addressId + " is not found!");
         }
+        address.setLink(Utility.getLinkToSelf(address.getId(), info));
         CacheControl cc = new CacheControl();
         cc.setMaxAge(86400);
         cc.setPrivate(true);
@@ -152,7 +168,7 @@ public class AddressResource {
     @DELETE
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{addressId: \\d+}")
-    public void deleteAddress(@PathParam("addressId") int addressId,
+    public Response deleteAddress(@PathParam("addressId") int addressId,
             @Context Request request
     ) {
         Address address = addressFacade.find(addressId);
@@ -160,6 +176,7 @@ public class AddressResource {
             throw new DataNotFoundException("Address with id: " + addressId + " is not found!");
         }
         addressFacade.remove(address);
+        address.setLink(Utility.getLinkToResource(addressId, info, "parent"));
+        return Response.ok(address).build();
     }
-
 }
