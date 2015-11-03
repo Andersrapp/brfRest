@@ -3,13 +3,14 @@ package dtos;
 import entities.Apartment;
 import entities.Link;
 import entities.Resident;
+import java.io.Serializable;
 import java.time.LocalDate;
 
 /**
  *
  * @author Anders
  */
-public class ResidencyDTO {
+public class ResidencyDTO implements Serializable{
 
     private Integer id;
     private LocalDate fromDate;

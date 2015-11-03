@@ -62,7 +62,6 @@ public class Residency implements Serializable {
     @JoinColumn(name = "resident", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Resident resident;
-    private Link link;
 
     public Residency() {
     }
@@ -114,14 +113,6 @@ public class Residency implements Serializable {
 
     public void setResident(Resident resident) {
         this.resident = resident;
-    }
-
-    public Link getLink() {
-        return link;
-    }
-
-    public void setLink(Link link) {
-        this.link = link;
     }
 
     @Override

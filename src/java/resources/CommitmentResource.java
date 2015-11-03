@@ -6,7 +6,6 @@ import exception.DataNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.EJB;
-import javax.validation.constraints.Pattern;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.FormParam;
@@ -39,9 +38,6 @@ import utilities.Utility;
 @Produces(MediaType.APPLICATION_JSON)
 public class CommitmentResource {
 
-    @Context
-    UriInfo info;
-
     @EJB
     CommitmentFacadeLocal commitmentFacade;
 
@@ -54,11 +50,10 @@ public class CommitmentResource {
     }
 
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
     public Response getCommitmentsByResident(
             @PathParam("residentId") int residentId,
-            @Context Request request
-    ) {
+            @Context UriInfo info,
+            @Context Request request) {
         List<Commitment> residentCommitments = commitmentFacade.findResidentCommitments(residentId);
         if (residentCommitments == null) {
             throw new DataNotFoundException("Resident with id: " + residentId + " has no commitments!");
@@ -66,12 +61,14 @@ public class CommitmentResource {
 
         int hashValue = 0;
         List<CommitmentDTO> commitmentDTOs = new ArrayList<>();
+
         for (Commitment commitment : residentCommitments) {
             CommitmentDTO commitmentDTO = Utility.convertCommitmentToDTO(commitment);
             hashValue += commitmentDTO.hashCode();
             commitmentDTO.setLink(Utility.getLinkToSelf(commitmentDTO.getId(), info));
             commitmentDTOs.add(commitmentDTO);
         }
+
         CacheControl cc = new CacheControl();
         cc.setMaxAge(86400);
         cc.setPrivate(true);
@@ -81,22 +78,61 @@ public class CommitmentResource {
         GenericEntity<List<CommitmentDTO>> commitmentDTOswrapper = new GenericEntity<List<CommitmentDTO>>(commitmentDTOs) {
         };
 
+//        GenericEntity<List<Commitment>> commitmentsWrapper = new GenericEntity<List<Commitment>>(residentCommitments) {
+//        };
         if (builder == null) {
             builder = Response.ok(commitmentDTOswrapper);
+//            builder = Response.ok(commitmentsWrapper);
             builder.tag(eTag);
         }
         builder.cacheControl(cc);
-
         return builder.build();
     }
 
+//    @GET
+//    @Produces(MediaType.APPLICATION_JSON)
+//    public Response getCommitmentsByResident(
+//            @PathParam("residentId") int residentId,
+//            @Context Request request
+//    ) {
+//        List<Commitment> residentCommitments = commitmentFacade.findResidentCommitments(residentId);
+//        if (residentCommitments == null) {
+//            throw new DataNotFoundException("Resident with id: " + residentId + " has no commitments!");
+//        }
+//
+//        int hashValue = 0;
+//        List<CommitmentDTO> commitmentDTOs = new ArrayList<>();
+//        for (Commitment commitment : residentCommitments) {
+//            CommitmentDTO commitmentDTO = Utility.convertCommitmentToDTO(commitment);
+//            hashValue += commitmentDTO.hashCode();
+//            commitmentDTO.setLink(Utility.getLinkToSelf(commitmentDTO.getId(), info));
+//            commitmentDTOs.add(commitmentDTO);
+//        }
+//        CacheControl cc = new CacheControl();
+//        cc.setMaxAge(86400);
+//        cc.setPrivate(true);
+//
+//        EntityTag eTag = new EntityTag(Integer.toString(hashValue));
+//        ResponseBuilder builder = request.evaluatePreconditions(eTag);
+//        GenericEntity<List<CommitmentDTO>> commitmentDTOswrapper = new GenericEntity<List<CommitmentDTO>>(commitmentDTOs) {
+//        };
+//
+//        if (builder == null) {
+//            builder = Response.ok(commitmentDTOswrapper);
+//            builder.tag(eTag);
+//        }
+//        builder.cacheControl(cc);
+//
+//        return builder.build();
+//    }
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{commitmentId: \\d+}")
     public Response getResidentCommitmentById(
             @PathParam("residentId") int residentId,
             @PathParam("commitmentId") int commitmentId,
-            @Context Request request
+            @Context Request request,
+            @Context UriInfo info
     ) {
         Commitment commitment = commitmentFacade.findOneResidentCommitment(residentId, commitmentId);
         if (commitment == null) {
@@ -123,13 +159,13 @@ public class CommitmentResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response createCommitment(
             @PathParam("residentId") int residentId,
-            //            CommitmentDTO2 com
             @FormParam("role") String role,
             @FormParam("fromDate") String fromDate,
             @FormParam("toDate") String toDate,
             @FormParam("authorized") String authorized,
             @Context HttpHeaders headers,
-            @Context Request request
+            @Context Request request,
+            @Context UriInfo info
     ) {
         Commitment commitment = new Commitment();
 
@@ -171,7 +207,8 @@ public class CommitmentResource {
             @FormParam("startDate") String startDate,
             @FormParam("endDate") String endDate,
             @FormParam("authorized") boolean authorized,
-            @Context Request request
+            @Context Request request,
+            @Context UriInfo info
     ) {
         Commitment commitment = commitmentFacade.find(commitmentId);
         commitment.setResident(residentFacade.find(residentId));
@@ -198,10 +235,9 @@ public class CommitmentResource {
     @DELETE
     @Path("{commitmentId: \\d+}")
     public Response deleteCommitment(
-            @Pattern(regexp = "[0-9]+")
             @PathParam("residentId") int residentId,
-            @PathParam("commitmentId")
-            @Pattern(regexp = "[0-9]+") int commitmentId
+            @PathParam("commitmentId") int commitmentId,
+            @Context UriInfo info
     ) {
         Commitment commitment = commitmentFacade.findOneResidentCommitment(residentId, commitmentId);
         if (commitment == null) {

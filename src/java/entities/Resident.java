@@ -12,8 +12,8 @@ import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -53,6 +53,7 @@ public class Resident implements Serializable {
     private List<Commitment> commitmentList;
 //    @OneToOne(cascade = CascadeType.ALL, mappedBy = "resident")
 //    private ContactInformation contactinformation;
+    @Transient
     private Link link;
 
     public Resident() {

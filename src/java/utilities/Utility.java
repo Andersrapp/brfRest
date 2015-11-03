@@ -5,6 +5,7 @@ import dtos.ResidencyDTO;
 import entities.Commitment;
 import entities.Link;
 import entities.Residency;
+import exception.DataNotFoundException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -64,7 +65,7 @@ public class Utility {
     }
 
     public static Link getLinkToSelf(int entityId, UriInfo info) {
-        String uri = info.getAbsolutePathBuilder().path(Integer.toString(entityId)).build().toString();
+        String uri = info.getAbsolutePathBuilder().build().toString();
         return new Link(uri, "self");
     }
 

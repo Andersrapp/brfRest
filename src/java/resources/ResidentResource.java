@@ -96,6 +96,7 @@ public class ResidentResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{residentId: \\d+}")
     public Response getOneResidentById(
+            //            
             @PathParam("residentId") int residentId,
             @Context Request request
     ) {
@@ -245,7 +246,8 @@ public class ResidentResource {
         if (residency == null) {
             throw new DataNotFoundException("Residency with id: " + residentId + " not found!");
         }
-        residency.setLink(Utility.getLinkToSelf(residencyId, info));
+        ResidencyDTO residencyDTO = Utility.convertResidencyToDTO(residency);
+        residencyDTO.setLink(Utility.getLinkToSelf(residencyId, info));
         CacheControl cc = new CacheControl();
         cc.setMaxAge(86400);
         cc.setPrivate(true);
@@ -253,7 +255,7 @@ public class ResidentResource {
         EntityTag eTag = new EntityTag(Integer.toString(residency.hashCode()));
         ResponseBuilder builder = request.evaluatePreconditions(eTag);
         if (builder == null) {
-            builder = Response.ok(residency);
+            builder = Response.ok(residencyDTO);
             builder.tag(eTag);
         }
         return builder.build();

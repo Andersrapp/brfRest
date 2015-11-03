@@ -1,7 +1,6 @@
 package resources;
 
 import entities.Address;
-import entities.Link;
 import exception.DataNotFoundException;
 import java.util.List;
 import javax.ejb.EJB;
@@ -168,7 +167,8 @@ public class AddressResource {
     @DELETE
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{addressId: \\d+}")
-    public Response deleteAddress(@PathParam("addressId") int addressId,
+    public Response deleteAddress(
+            @PathParam("addressId") int addressId,
             @Context Request request
     ) {
         Address address = addressFacade.find(addressId);

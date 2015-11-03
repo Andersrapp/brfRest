@@ -2,13 +2,14 @@ package dtos;
 
 import entities.Link;
 import entities.Resident;
+import java.io.Serializable;
 import java.time.LocalDate;
 
 /**
  *
  * @author Anders
  */
-public class CommitmentDTO {
+public class CommitmentDTO implements Serializable{
 
     private Integer id;
     private String role;

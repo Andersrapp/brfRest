@@ -47,7 +47,6 @@ public class ApartmentResource {
     Request request;
 
     @EJB
-//        (lookup = "java:global/BrfREST/ApartmentFacade!services.ApartmentFacadeLocal")
     ApartmentFacadeLocal apartmentFacade;
 
     @EJB
@@ -56,13 +55,14 @@ public class ApartmentResource {
     @EJB
     ResidencyFacadeLocal residencyFacade;
 
-    @EJB(lookup = "java:global/BrfREST/ResidentFacade!services.ResidentFacadeLocal")
+    @EJB
     ResidentFacadeLocal residentFacade;
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{apartmentId: \\d+}")
-    public Response getApartmentById(@PathParam("apartmentId") int apartmentId,
+    public Response getApartmentById(
+            @PathParam("apartmentId") int apartmentId,
             @Context Request request) {
 
         Apartment apartment;
@@ -214,7 +214,9 @@ public class ApartmentResource {
     @DELETE
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{apartmentId: \\d+}")
-    public void deleteApartment(@PathParam("apartmentId") int apartmentId) {
+    public void deleteApartment(
+            @PathParam("apartmentId") int apartmentId
+    ) {
         Apartment apartment = apartmentFacade.find(apartmentId);
         if (apartment == null) {
             throw new DataNotFoundException("Apartment with id: " + apartmentId + " is not found!");
