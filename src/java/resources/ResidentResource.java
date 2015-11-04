@@ -204,78 +204,86 @@ public class ResidentResource {
 
     }
 
-    @GET
+    @Path("{parentResourceId: \\d+}/residencies")
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("{residentId: \\d+}/residencies")
-    public Response getResidenciesByResidentId(
-            @PathParam("residentId") int residentId,
-            @Context Request request
-    ) {
-        int hashValue = 0;
-        List<Residency> residencies = residencyFacade.findResidentResidencies(residentId);
-        List<ResidencyDTO> residencyDTOs = new ArrayList<>();
-        ResidencyDTO residencyDTO;
-        for (Residency residency : residencies) {
-            residencyDTO = Utility.convertResidencyToDTO(residency);
-            residencyDTOs.add(residencyDTO);
-            hashValue += residencyDTO.hashCode();
-            residencyDTO.setLink(Utility.getLinkToSelf(residency.getId(), info));
-
-        }
-        CacheControl cc = new CacheControl();
-        cc.setMaxAge(86400);
-        cc.setPrivate(true);
-
-        EntityTag eTag = new EntityTag(Integer.toString(hashValue));
-        ResponseBuilder builder = request.evaluatePreconditions(eTag);
-        GenericEntity<List<ResidencyDTO>> residencyDTOswrapper = new GenericEntity<List<ResidencyDTO>>(residencyDTOs) {
-        };
-        if (builder == null) {
-//            builder = Response.ok(residencyDTOs);
-            builder = Response.ok(residencyDTOswrapper);
-            builder.tag(eTag);
-        }
-//        Använd ETag Header i requestet.
-        builder.cacheControl(cc);
-        return builder.build();
-
+    public ResidencyResource getResidencyResource() {
+        return new ResidencyResource();
     }
 
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("{residentId:  \\d+}/residencies/{residencyId: \\d+}")
-    public Response getResidentResidencyById(
-            @PathParam("residentId") int residentId,
-            @PathParam("residencyId") int residencyId,
-            @Context Request request
-    ) {
-        Residency residency = residencyFacade.findOneResidentResidency(residentId, residencyId);
-
-        if (residency == null) {
-            throw new DataNotFoundException("Residency with id: " + residentId + " not found!");
-        }
-        ResidencyDTO residencyDTO = Utility.convertResidencyToDTO(residency);
-        residencyDTO.setLink(Utility.getLinkToSelf(residencyId, info));
-        CacheControl cc = new CacheControl();
-        cc.setMaxAge(86400);
-        cc.setPrivate(true);
-
-        EntityTag eTag = new EntityTag(Integer.toString(residency.hashCode()));
-        ResponseBuilder builder = request.evaluatePreconditions(eTag);
-        if (builder == null) {
-            builder = Response.ok(residencyDTO);
-            builder.tag(eTag);
-        }
-        return builder.build();
-    }
-
+//    @GET
+//    @Produces(MediaType.APPLICATION_JSON)
+//    @Path("{residentId: \\d+}/residencies")
+//    public Response getResidenciesByResidentId(
+//            @PathParam("residentId") int residentId,
+//            @Context Request request
+//    ) {
+//        int hashValue = 0;
+//        List<Residency> residencies = residencyFacade.findResidentResidencies(residentId);
+//        List<ResidencyDTO> residencyDTOs = new ArrayList<>();
+//        ResidencyDTO residencyDTO;
+//        for (Residency residency : residencies) {
+//            residencyDTO = Utility.convertResidencyToDTO(residency);
+//            residencyDTOs.add(residencyDTO);
+//            hashValue += residencyDTO.hashCode();
+//            residencyDTO.setLink(Utility.getLinkToSelf(residency.getId(), info));
+//
+//        }
+//        CacheControl cc = new CacheControl();
+//        cc.setMaxAge(86400);
+//        cc.setPrivate(true);
+//
+//        EntityTag eTag = new EntityTag(Integer.toString(hashValue));
+//        ResponseBuilder builder = request.evaluatePreconditions(eTag);
+//        GenericEntity<List<ResidencyDTO>> residencyDTOswrapper = new GenericEntity<List<ResidencyDTO>>(residencyDTOs) {
+//        };
+//        if (builder == null) {
+////            builder = Response.ok(residencyDTOs);
+//            builder = Response.ok(residencyDTOswrapper);
+//            builder.tag(eTag);
+//        }
+////        Använd ETag Header i requestet.
+//        builder.cacheControl(cc);
+//        return builder.build();
+//    }
+//
+//    @Path("{parentResourceId: \\d+}/residencies")
+//    public ResidentResource getResidentResource() {
+//        return new ResidentResource();
+//    }
+//
+//    @GET
+//    @Produces(MediaType.APPLICATION_JSON)
+//    @Path("{residentId:  \\d+}/residencies/{residencyId: \\d+}")
+//    public Response getResidentResidencyById(
+//            @PathParam("residentId") int residentId,
+//            @PathParam("residencyId") int residencyId,
+//            @Context Request request
+//    ) {
+//        Residency residency = residencyFacade.findOneResidentResidency(residentId, residencyId);
+//        if (residency == null) {
+//            throw new DataNotFoundException("Residency with id: " + residentId + " not found!");
+//        }
+//        ResidencyDTO residencyDTO = Utility.convertResidencyToDTO(residency);
+//        residencyDTO.setLink(Utility.getLinkToSelf(residencyId, info));
+//        CacheControl cc = new CacheControl();
+//        cc.setMaxAge(86400);
+//        cc.setPrivate(true);
+//
+//        EntityTag eTag = new EntityTag(Integer.toString(residency.hashCode()));
+//        ResponseBuilder builder = request.evaluatePreconditions(eTag);
+//        if (builder == null) {
+//            builder = Response.ok(residencyDTO);
+//            builder.tag(eTag);
+//        }
+//        return builder.build();
+//    }
     @Path("{residentId: \\d+}/contactinformation")
     public ContactInformationResource getContactInformationResource() {
         return new ContactInformationResource();
     }
 
     @Path("{residentId: \\d+}/commitments")
-    @Consumes(MediaType.APPLICATION_JSON)
+//    @Consumes(MediaType.APPLICATION_JSON)
     public CommitmentResource getCommitmentResource() {
         return new CommitmentResource();
     }

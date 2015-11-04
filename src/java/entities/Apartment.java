@@ -30,8 +30,12 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Apartment.findByRoomCount", query = "SELECT a FROM Apartment a WHERE a.roomCount = :roomCount"),
     @NamedQuery(name = "Apartment.findByArea", query = "SELECT a FROM Apartment a WHERE a.area = :area"),
     @NamedQuery(name = "Apartment.findByFloorCode", query = "SELECT a FROM Apartment a WHERE a.floorCode = :floorCode"),
-    @NamedQuery(name = "Apartment.findByShare", query = "SELECT a FROM Apartment a WHERE a.share = :share")})
+    @NamedQuery(name = "Apartment.findByShare", query = "SELECT a FROM Apartment a WHERE a.share = :share"),
+    @NamedQuery(name = "Apartment.getAreaSum", query = "SELECT count(a.area) FROM Apartment a")
+
+})
 public class Apartment implements Serializable {
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

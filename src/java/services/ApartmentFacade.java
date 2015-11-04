@@ -4,7 +4,7 @@ import entities.Apartment;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
+import javax.persistence.Query;
 
 /**
  *
@@ -12,6 +12,7 @@ import javax.persistence.TypedQuery;
  */
 @Stateless
 public class ApartmentFacade extends AbstractFacade<Apartment> implements ApartmentFacadeLocal {
+
     @PersistenceContext(unitName = "BrfRESTPU")
     private EntityManager em;
 
@@ -27,8 +28,9 @@ public class ApartmentFacade extends AbstractFacade<Apartment> implements Apartm
     @Override
     public int getAreaCount() {
 
-        TypedQuery q = em.createNamedQuery("Apartment.countArea", Apartment.class);
-        
+        Query q = em.createNativeQuery("SELECT SUM(area) from Apartment");
+        int count = (int) q.getSingleResult();
+        return count;
     }
-    
+
 }

@@ -142,13 +142,10 @@ public class ApartmentResource {
             apartment.setArea(area);
             int count = apartmentFacade.getAreaCount();
 
-//            apartment.setShare(updateShareNumbers(area, roomCount));
+            apartment.setShare(updateShareNumbers(area));
         }
-//        apartment.setArea(area);
-
         apartment.setFloorCode(floorCode);
         apartment.setRoomCount(roomCount);
-//        apartment.setShare(share);
         apartment = apartmentFacade.create(apartment);
 
         CacheControl cc = new CacheControl();
@@ -179,7 +176,6 @@ public class ApartmentResource {
         }
         apartment.setAddress(address);
         apartment.setRoomCount(roomCount);
-//        apartment.setShare(share);
         apartment.setArea(area);
         apartment.setFloorCode(floorCode);
         apartment = apartmentFacade.edit(apartment);
@@ -204,129 +200,142 @@ public class ApartmentResource {
         apartmentFacade.remove(apartment);
     }
 
-    @GET
+    @Path("{parentResourceId: \\d+}/residencies")
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("{apartmentId: \\d+}/residencies")
-    public Response getApartmentResidencies(
-            @PathParam("apartmentId") int apartmentId,
-            @Context Request request
-    ) {
-        List<Residency> apartmentResidencies = residencyFacade.findResidenciesByApartment(apartmentId);
-        List<ResidencyDTO> residencyDTOs = new ArrayList<>();
-        int hashValue = 0;
-        for (Residency residency : apartmentResidencies) {
-            ResidencyDTO residencyDTO = Utility.convertResidencyToDTO(residency);
-            hashValue += residencyDTO.hashCode();
-            residencyDTOs.add(residencyDTO);
-        }
-        CacheControl cc = new CacheControl();
-        cc.setMaxAge(86400);
-        cc.setPrivate(true);
-
-        EntityTag eTag = new EntityTag(Integer.toString(hashValue));
-        ResponseBuilder builder = request.evaluatePreconditions(eTag);
-        GenericEntity<List<ResidencyDTO>> residencyDTOsEntity = new GenericEntity<List<ResidencyDTO>>(residencyDTOs) {
-        };
-
-        if (builder == null) {
-            builder = Response.ok(residencyDTOsEntity);
-            builder.tag(eTag);
-        }
-        builder.cacheControl(cc);
-        return builder.build();
+    public ResidencyResource getResidencyResource() {
+        return new ResidencyResource();
     }
 
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("{apartmentId: \\d+}/residencies/{residencyId: \\d+}")
-    public Response getApartmentResidencyById(
-            @PathParam("apartmentId") int apartmentId,
-            @PathParam("residencyId") int residencyId,
-            @Context Request request
-    ) {
-        Residency residency = residencyFacade.findOneApartmentResidency(apartmentId, residencyId);
-        if (residency == null) {
-            throw new DataNotFoundException(
-                    "Residency with id: " + residencyId + " under apartment with id: " + apartmentId + " is not found!");
+//    @GET
+//    @Produces(MediaType.APPLICATION_JSON)
+//    @Path("{apartmentId: \\d+}/residencies")
+//    public Response getApartmentResidencies(
+//            @PathParam("apartmentId") int apartmentId,
+//            @Context Request request
+//    ) {
+//        List<Residency> apartmentResidencies = residencyFacade.findResidenciesByApartment(apartmentId);
+//        List<ResidencyDTO> residencyDTOs = new ArrayList<>();
+//        int hashValue = 0;
+//        for (Residency residency : apartmentResidencies) {
+//            ResidencyDTO residencyDTO = Utility.convertResidencyToDTO(residency);
+//            hashValue += residencyDTO.hashCode();
+//            residencyDTOs.add(residencyDTO);
+//        }
+//        CacheControl cc = new CacheControl();
+//        cc.setMaxAge(86400);
+//        cc.setPrivate(true);
+//
+//        EntityTag eTag = new EntityTag(Integer.toString(hashValue));
+//        ResponseBuilder builder = request.evaluatePreconditions(eTag);
+//        GenericEntity<List<ResidencyDTO>> residencyDTOsEntity = new GenericEntity<List<ResidencyDTO>>(residencyDTOs) {
+//        };
+//
+//        if (builder == null) {
+//            builder = Response.ok(residencyDTOsEntity);
+//            builder.tag(eTag);
+//        }
+//        builder.cacheControl(cc);
+//        return builder.build();
+//    }
+//
+//    @GET
+//    @Produces(MediaType.APPLICATION_JSON)
+//    @Path("{apartmentId: \\d+}/residencies/{residencyId: \\d+}")
+//    public Response getApartmentResidencyById(
+//            @PathParam("apartmentId") int apartmentId,
+//            @PathParam("residencyId") int residencyId,
+//            @Context Request request
+//    ) {
+//        Residency residency = residencyFacade.findOneApartmentResidency(apartmentId, residencyId);
+//        if (residency == null) {
+//            throw new DataNotFoundException(
+//                    "Residency with id: " + residencyId + " under apartment with id: " + apartmentId + " is not found!");
+//        }
+//
+//        CacheControl cc = new CacheControl();
+//        cc.setMaxAge(86400);
+//        cc.setPrivate(true);
+//
+//        ResidencyDTO residencyDTO = Utility.convertResidencyToDTO(residency);
+//        residencyDTO.setLink(Utility.getLinkToSelf(residencyId, info));
+//        EntityTag eTag = new EntityTag(Integer.toString(residencyDTO.hashCode()));
+//        ResponseBuilder builder = request.evaluatePreconditions(eTag);
+//
+//        if (builder == null) {
+//            builder = Response.ok(residency);
+//            builder.tag(eTag);
+//        }
+//        builder.cacheControl(cc);
+//
+//        return builder.build();
+//    }
+//
+//    @POST
+//    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+//    @Produces(MediaType.APPLICATION_JSON)
+//    @Path("{apartmentId: \\d+}/residencies")
+//    public void createResidency(
+//            @PathParam("apartmentId") int apartmentId,
+//            @FormParam("residentId") int residentId,
+//            @FormParam("fromDate") String inDate,
+//            @FormParam("toDate") String outDate
+//    ) {
+//        Residency residency = new Residency();
+//        residency.setApartment(apartmentFacade.find(apartmentId));
+//        residency.setResident(residentFacade.find(residentId));
+//        residency.setFromDate(Utility.parseStringToDate(inDate));
+//        if (outDate != null) {
+//            residency.setToDate(Utility.parseStringToDate(outDate));
+//        } else {
+//            residency.setToDate(null);
+//        }
+//
+//        residencyFacade.create(residency);
+//    }
+//
+//    @PUT
+//    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+//    @Produces(MediaType.APPLICATION_JSON)
+//    @Path("{apartmentId: \\d+}/residencies/{residencyId: \\d+}")
+//    public Response updateResidency(
+//            @PathParam("apartmentId") int apartmentId,
+//            @PathParam("residencyId") int residencyId,
+//            @FormParam("residentId") int residentId,
+//            @FormParam("fromDate") String inDate,
+//            @FormParam("toDate") String outDate
+//    ) {
+//        Residency residency = residencyFacade.find(residencyId);
+//        residency.setApartment(apartmentFacade.find(apartmentId));
+//        residency.setResident(residentFacade.find(residentId));
+//        residency.setFromDate(Utility.parseStringToDate(inDate));
+//        if (outDate != null) {
+//            residency.setToDate(Utility.parseStringToDate(outDate));
+//        } else {
+//            residency.setToDate(null);
+//        }
+//
+//        residencyFacade.edit(residency);
+//        return Response.ok(Utility.convertResidencyToDTO(residency)).build();
+//    }
+//
+//    @DELETE
+//    @Path("{apartmentId: \\d+}/residencies/{residencyId: \\d+}")
+//    public Response deleteResidency(
+//            @PathParam("apartmentId") int apartmentId,
+//            @PathParam("residencyId") int residencyId
+//    ) {
+//        Residency residency = residencyFacade.findOneApartmentResidency(apartmentId, residencyId);
+//        residencyFacade.remove(residency);
+//        return Response.ok().build();
+//    }
+    public float updateShareNumbers(int apartmentArea) {
+        int areaCount = apartmentFacade.getAreaCount();
+        List<Apartment> apartments = apartmentFacade.findAll();
+        float share;
+        for (Apartment apartment : apartments) {
+            share = (float) apartment.getArea() / areaCount;
+            apartment.setShare(share);
         }
-
-        CacheControl cc = new CacheControl();
-        cc.setMaxAge(86400);
-        cc.setPrivate(true);
-
-        ResidencyDTO residencyDTO = Utility.convertResidencyToDTO(residency);
-        EntityTag eTag = new EntityTag(Integer.toString(residencyDTO.hashCode()));
-        ResponseBuilder builder = request.evaluatePreconditions(eTag);
-
-        if (builder == null) {
-            builder = Response.ok(residency);
-            builder.tag(eTag);
-        }
-        builder.cacheControl(cc);
-
-        return builder.build();
-    }
-
-    @POST
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("{apartmentId: \\d+}/residencies")
-    public void createResidency(
-            @PathParam("apartmentId") int apartmentId,
-            @FormParam("residentId") int residentId,
-            @FormParam("fromDate") String inDate,
-            @FormParam("toDate") String outDate
-    ) {
-        Residency residency = new Residency();
-        residency.setApartment(apartmentFacade.find(apartmentId));
-        residency.setResident(residentFacade.find(residentId));
-        residency.setFromDate(Utility.parseStringToDate(inDate));
-        if (outDate != null) {
-            residency.setToDate(Utility.parseStringToDate(outDate));
-        } else {
-            residency.setToDate(null);
-        }
-        residencyFacade.create(residency);
-    }
-
-    @PUT
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("{apartmentId: \\d+}/residencies/{residencyId: \\d+}")
-    public Response updateResidency(
-            @PathParam("apartmentId") int apartmentId,
-            @PathParam("residencyId") int residencyId,
-            @FormParam("residentId") int residentId,
-            @FormParam("fromDate") String inDate,
-            @FormParam("toDate") String outDate
-    ) {
-        Residency residency = residencyFacade.find(residencyId);
-        residency.setApartment(apartmentFacade.find(apartmentId));
-        residency.setResident(residentFacade.find(residentId));
-        residency.setFromDate(Utility.parseStringToDate(inDate));
-        if (outDate != null) {
-            residency.setToDate(Utility.parseStringToDate(outDate));
-        } else {
-            residency.setToDate(null);
-        }
-
-        residencyFacade.edit(residency);
-        return Response.ok(Utility.convertResidencyToDTO(residency)).build();
-    }
-
-    @DELETE
-    @Path("{apartmentId: \\d+}/residencies/{residencyId: \\d+}")
-    public Response deleteResidency(
-            @PathParam("apartmentId") int apartmentId,
-            @PathParam("residencyId") int residencyId
-    ) {
-        Residency residency = residencyFacade.findOneApartmentResidency(apartmentId, residencyId);
-        residencyFacade.remove(residency);
-        return Response.ok().build();
-    }
-
-    public int updateShareNumbers(int apartmentArea, int areaCount) {
-        
         return 0;
     }
 }
