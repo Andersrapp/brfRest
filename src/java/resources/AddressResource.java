@@ -4,7 +4,7 @@ import entities.Address;
 import exception.DataNotFoundException;
 import java.util.List;
 import javax.ejb.EJB;
-import javax.ws.rs.DELETE;
+import javax.validation.constraints.Pattern;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -96,87 +96,97 @@ public class AddressResource {
         return builder.build();
     }
 
-    @POST
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response createAddress(
-            @FormParam("city") String city,
-            @FormParam("streetName") String streetName,
-            @FormParam("streetNumber") String streetNumber,
-            @Context Request request
-    ) {
-        Address address = new Address();
-        address.setCity(city);
-        address.setStreetName(streetName);
-        address.setStreetNumber(streetNumber);
-
-        address = addressFacade.create(address);
-        address.setLink(Utility.getLinkToSelf(address.getId(), info));
-        CacheControl cc = new CacheControl();
-        cc.setMaxAge(86400);
-        cc.setPrivate(true);
-
-        EntityTag eTag = new EntityTag(Integer.toString(address.hashCode()));
-        ResponseBuilder builder = request.evaluatePreconditions(eTag);
-
-        if (builder == null) {
-            builder = Response.ok(address);
-            builder.tag(eTag);
-        }
-        builder.cacheControl(cc);
-        return builder.build();
-    }
-
-    @PUT
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("{addressId: \\d+}")
-    public Response updateAddress(
-            @PathParam("addressId") int addressId,
-            @FormParam("city") String city,
-            @FormParam("streetName") String streetName,
-            @FormParam("streetNumber") String streetNumber,
-            @Context Request request
-    ) {
-        Address address = addressFacade.find(addressId);
-        if (address == null) {
-            throw new DataNotFoundException("Address with id: " + addressId + " is not found!");
-        }
-        address.setCity(city);
-        address.setStreetName(streetName);
-        address.setStreetNumber(streetNumber);
-        address = addressFacade.edit(address);
-        if (address == null) {
-            throw new DataNotFoundException("Address with id: " + addressId + " is not found!");
-        }
-        address.setLink(Utility.getLinkToSelf(address.getId(), info));
-        CacheControl cc = new CacheControl();
-        cc.setMaxAge(86400);
-        cc.setPrivate(true);
-
-        EntityTag eTag = new EntityTag(Integer.toString(address.hashCode()));
-        ResponseBuilder builder = request.evaluatePreconditions(eTag);
-
-        if (builder == null) {
-            builder = Response.ok(address);
-            builder.tag(eTag);
-        }
-        builder.cacheControl(cc);
-        return builder.build();
-
-    }
-
-    @DELETE
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("{addressId: \\d+}")
-    public Response deleteAddress(
-            @PathParam("addressId") int addressId,
-            @Context Request request
-    ) {
-        Address address = addressFacade.find(addressId);
-        if (address == null) {
-            throw new DataNotFoundException("Address with id: " + addressId + " is not found!");
-        }
-        addressFacade.remove(address);
-        address.setLink(Utility.getLinkToResource(addressId, info, "parent"));
-        return Response.ok(address).build();
-    }
+//    @POST
+//    @Produces(MediaType.APPLICATION_JSON)
+//    public Response createAddress(
+//            @FormParam("city") String city,
+//            @FormParam("streetName") String streetName,
+//            @FormParam("streetNumber") String streetNumber,
+//            @Context Request request
+//    ) {
+//        Address address = new Address();
+//        address.setCity(city);
+//        if (!"Waernsgatan".equalsIgnoreCase(streetName.trim())) {
+//            return Response.notModified("Address incorrect. Must be \"Waernsgatan\"").build();
+//        }
+//        address.setStreetName("Waernsgatan");
+//        address.setStreetNumber(streetNumber);
+//
+//        address = addressFacade.create(address);
+//        address.setLink(Utility.getLinkToSelf(address.getId(), info));
+//        CacheControl cc = new CacheControl();
+//        cc.setMaxAge(86400);
+//        cc.setPrivate(true);
+//
+//        EntityTag eTag = new EntityTag(Integer.toString(address.hashCode()));
+//        ResponseBuilder builder = request.evaluatePreconditions(eTag);
+//
+//        if (builder == null) {
+//            builder = Response.ok(address);
+//            builder.tag(eTag);
+//        }
+//        builder.cacheControl(cc);
+//        return builder.build();
+//    }
+//
+//    @PUT
+//    @Produces(MediaType.APPLICATION_JSON)
+//    @Path("{addressId: \\d+}")
+//    public Response updateAddress(
+//            @PathParam("addressId") int addressId,
+//            @FormParam("city") String city,
+//            @FormParam("streetName") String streetName,
+//            @FormParam("streetNumber") String streetNumber,
+//            @Context Request request
+//    ) {
+//        Address address = addressFacade.find(addressId);
+//        if (address == null) {
+//            throw new DataNotFoundException("Address with id: " + addressId + " is not found!");
+//        }
+//        if ("Gothenburg".equalsIgnoreCase(city.trim())) {
+//            return Response.notModified("City name must be Gothenburg").build();
+//        }
+//
+//        address.setCity(city);
+//        address.setStreetName(streetName);
+//        address.setStreetNumber(streetNumber);
+//        address = addressFacade.edit(address);
+//        if (address == null) {
+//            throw new DataNotFoundException("Address with id: " + addressId + " is not found!");
+//        }
+//        if (!"Waernsgatan".equals(streetName)) {
+//            return Response.notModified("Address incorrect. Must be \"Waernsgatan\"").build();
+//        }
+//        address.setLink(Utility.getLinkToSelf(address.getId(), info));
+//        CacheControl cc = new CacheControl();
+//        cc.setMaxAge(86400);
+//        cc.setPrivate(true);
+//
+//        EntityTag eTag = new EntityTag(Integer.toString(address.hashCode()));
+//        ResponseBuilder builder = request.evaluatePreconditions(eTag);
+//
+//        if (builder == null) {
+//            builder = Response.ok(address);
+//            builder.tag(eTag);
+//        }
+//        builder.cacheControl(cc);
+//        return builder.build();
+//
+//    }
+//
+//    @DELETE
+//    @Produces(MediaType.APPLICATION_JSON)
+//    @Path("{addressId: \\d+}")
+//    public Response deleteAddress(
+//            @PathParam("addressId") int addressId,
+//            @Context Request request
+//    ) {
+//        Address address = addressFacade.find(addressId);
+//        if (address == null) {
+//            throw new DataNotFoundException("Address with id: " + addressId + " is not found!");
+//        }
+//        addressFacade.remove(address);
+//        address.setLink(Utility.getLinkToResource(addressId, info));
+//        return Response.ok(address).build();
+//    }
 }

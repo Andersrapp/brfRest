@@ -1,6 +1,8 @@
 package resources;
 
 import dtos.ResidencyDTO;
+import entities.Commitment;
+import entities.ContactInformation;
 import entities.Residency;
 import entities.Resident;
 import exception.DataNotFoundException;
@@ -149,7 +151,7 @@ public class ResidentResource {
     }
 
     @PUT
-    @Consumes(MediaType.APPLICATION_JSON)
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_FORM_URLENCODED})
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{residentId: \\d+}")
     public Response updateResident(
@@ -192,6 +194,12 @@ public class ResidentResource {
             @Context Request request
     ) {
         Resident resident = residentFacade.find(residentId);
+        List<Commitment> residentCommitments = commitmentFacade.findResidentCommitments(residentId);
+        for (Commitment commitment : residentCommitments) {
+            commitmentFacade.remove(commitment);
+        }
+        ContactInformation contactInformation = contactInformationFacade.findResidentContactinformation(residentId);
+        contactInformationFacade.remove(contactInformation);
         residentFacade.remove(resident);
 
     }

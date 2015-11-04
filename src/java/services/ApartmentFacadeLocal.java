@@ -24,5 +24,7 @@ public interface ApartmentFacadeLocal {
     List<Apartment> findRange(int[] range);
 
     int count();
-    
+
+    int getAreaCount();
+
 }

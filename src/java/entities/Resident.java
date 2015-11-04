@@ -49,8 +49,8 @@ public class Resident implements Serializable {
     private String lastName;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "resident")
     private List<Residency> residencyList;
-    @OneToMany(mappedBy = "resident")
-    private List<Commitment> commitmentList;
+//    @OneToMany(mappedBy = "resident")
+//    private List<Commitment> commitmentList;
 //    @OneToOne(cascade = CascadeType.ALL, mappedBy = "resident")
 //    private ContactInformation contactinformation;
     @Transient
@@ -104,14 +104,14 @@ public class Resident implements Serializable {
         this.residencyList = residencyList;
     }
 
-    @XmlTransient
-    public List<Commitment> getCommitmentList() {
-        return commitmentList;
-    }
-
-    public void setCommitmentList(List<Commitment> commitmentList) {
-        this.commitmentList = commitmentList;
-    }
+//    @XmlTransient
+//    public List<Commitment> getCommitmentList() {
+//        return commitmentList;
+//    }
+//
+//    public void setCommitmentList(List<Commitment> commitmentList) {
+//        this.commitmentList = commitmentList;
+//    }
 
     public Link getLink() {
         return link;

@@ -67,7 +67,6 @@ public class ApartmentResource {
 
         Apartment apartment;
 
-//        apartmentFacade = JNDIUtility.checkJNDI(apartmentFacade);
         apartment = apartmentFacade.find(apartmentId);
         if (apartment == null) {
             throw new DataNotFoundException("Apartment with id: " + apartmentId + " is not found!");
@@ -83,7 +82,7 @@ public class ApartmentResource {
             builder = Response.ok(apartment);
             builder.tag(eTag);
         }
-//        builder.cacheControl(cc);
+        builder.cacheControl(cc);
 
         return builder.build();
     }
@@ -115,48 +114,18 @@ public class ApartmentResource {
         builder.cacheControl(cc);
         return builder.build();
     }
-//    @GET
-//    @Path("/")
-//    @Produces(MediaType.APPLICATION_JSON)
-//    public Response getAllApartments(
-//            @Context Request request
-//    ) {
-//        System.out.println("före");
-//        List<Apartment> apartments = apartmentFacade.findAll();
-//        System.out.println("efter");
-// 
-//        if (apartments == null) {
-//            throw new DataNotFoundException("Apartments not found!");
-//        }
-//        CacheControl cc = new CacheControl();
-//        cc.setMaxAge(86400);
-//        cc.setPrivate(true);
-//
-//        int hashValue = 0;
-//        GenericEntity<List<Apartment>> apartmentsEntity = new GenericEntity<List<Apartment>>(apartments) {
-//        };
-//
-//        hashValue = apartments.stream().map((apartment) -> apartment.hashCode()).reduce(hashValue, Integer::sum);
-//        EntityTag eTag = new EntityTag(Integer.toString(hashValue));
-//        ResponseBuilder builder = request.evaluatePreconditions(eTag);
-//        if (builder == null) {
-//            builder = Response.ok(apartmentsEntity);
-//            builder.tag(eTag);
-//        }
-//        builder.cacheControl(cc);
-//        return builder.build();
-//    }
 
     @POST
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes({MediaType.APPLICATION_FORM_URLENCODED, MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_FORM_URLENCODED})
     public Response createApartment(
             @FormParam("apartmentNumber") int apartmentNumber,
             @FormParam("addressId") int addressId,
             @FormParam("area") int area,
             @FormParam("floorCode") int floorCode,
-            @FormParam("roomCount") int roomCount,
-            @FormParam("share") float share
+            @FormParam("roomCount") int roomCount
+    //            ,
+    //            @FormParam("share") float share
     ) {
         Apartment apartment = new Apartment();
         apartment.setApartmentNumber(apartmentNumber);
@@ -166,10 +135,20 @@ public class ApartmentResource {
         }
 
         apartment.setAddress(address);
-        apartment.setArea(area);
+        if (area <= 25 || area >= 180) {
+            return Response.notModified("Given area is out of bounds").build();
+        }
+        if (area != apartment.getArea()) {
+            apartment.setArea(area);
+            int count = apartmentFacade.getAreaCount();
+
+//            apartment.setShare(updateShareNumbers(area, roomCount));
+        }
+//        apartment.setArea(area);
+
         apartment.setFloorCode(floorCode);
         apartment.setRoomCount(roomCount);
-        apartment.setShare(share);
+//        apartment.setShare(share);
         apartment = apartmentFacade.create(apartment);
 
         CacheControl cc = new CacheControl();
@@ -188,7 +167,7 @@ public class ApartmentResource {
             @FormParam("apartmentNumber") int apartmentNumber,
             @FormParam("addressId") int addressId,
             @FormParam("roomCount") int roomCount,
-            @FormParam("share") float share,
+            //            @FormParam("share") float share,
             @FormParam("area") int area,
             @FormParam("floorCode") int floorCode
     ) {
@@ -200,7 +179,7 @@ public class ApartmentResource {
         }
         apartment.setAddress(address);
         apartment.setRoomCount(roomCount);
-        apartment.setShare(share);
+//        apartment.setShare(share);
         apartment.setArea(area);
         apartment.setFloorCode(floorCode);
         apartment = apartmentFacade.edit(apartment);
@@ -344,5 +323,10 @@ public class ApartmentResource {
         Residency residency = residencyFacade.findOneApartmentResidency(apartmentId, residencyId);
         residencyFacade.remove(residency);
         return Response.ok().build();
+    }
+
+    public int updateShareNumbers(int apartmentArea, int areaCount) {
+        
+        return 0;
     }
 }

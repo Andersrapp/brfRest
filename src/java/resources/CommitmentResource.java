@@ -78,53 +78,14 @@ public class CommitmentResource {
         GenericEntity<List<CommitmentDTO>> commitmentDTOswrapper = new GenericEntity<List<CommitmentDTO>>(commitmentDTOs) {
         };
 
-//        GenericEntity<List<Commitment>> commitmentsWrapper = new GenericEntity<List<Commitment>>(residentCommitments) {
-//        };
         if (builder == null) {
             builder = Response.ok(commitmentDTOswrapper);
-//            builder = Response.ok(commitmentsWrapper);
             builder.tag(eTag);
         }
         builder.cacheControl(cc);
         return builder.build();
     }
 
-//    @GET
-//    @Produces(MediaType.APPLICATION_JSON)
-//    public Response getCommitmentsByResident(
-//            @PathParam("residentId") int residentId,
-//            @Context Request request
-//    ) {
-//        List<Commitment> residentCommitments = commitmentFacade.findResidentCommitments(residentId);
-//        if (residentCommitments == null) {
-//            throw new DataNotFoundException("Resident with id: " + residentId + " has no commitments!");
-//        }
-//
-//        int hashValue = 0;
-//        List<CommitmentDTO> commitmentDTOs = new ArrayList<>();
-//        for (Commitment commitment : residentCommitments) {
-//            CommitmentDTO commitmentDTO = Utility.convertCommitmentToDTO(commitment);
-//            hashValue += commitmentDTO.hashCode();
-//            commitmentDTO.setLink(Utility.getLinkToSelf(commitmentDTO.getId(), info));
-//            commitmentDTOs.add(commitmentDTO);
-//        }
-//        CacheControl cc = new CacheControl();
-//        cc.setMaxAge(86400);
-//        cc.setPrivate(true);
-//
-//        EntityTag eTag = new EntityTag(Integer.toString(hashValue));
-//        ResponseBuilder builder = request.evaluatePreconditions(eTag);
-//        GenericEntity<List<CommitmentDTO>> commitmentDTOswrapper = new GenericEntity<List<CommitmentDTO>>(commitmentDTOs) {
-//        };
-//
-//        if (builder == null) {
-//            builder = Response.ok(commitmentDTOswrapper);
-//            builder.tag(eTag);
-//        }
-//        builder.cacheControl(cc);
-//
-//        return builder.build();
-//    }
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{commitmentId: \\d+}")
@@ -180,7 +141,7 @@ public class CommitmentResource {
         }
         commitment = commitmentFacade.create(commitment);
         CommitmentDTO commitmentDTO = Utility.convertCommitmentToDTO(commitment);
-        commitmentDTO.setLink(Utility.getLinkToResource(commitmentDTO.getId(), info, "self"));
+        commitmentDTO.setLink(Utility.getLinkToSelf(commitmentDTO.getId(), info));
         CacheControl cc = new CacheControl();
         cc.setMaxAge(86400);
         cc.setPrivate(true);
@@ -204,8 +165,8 @@ public class CommitmentResource {
             @PathParam("residentId") int residentId,
             @PathParam("commitmentId") int commitmentId,
             @FormParam("role") String role,
-            @FormParam("startDate") String startDate,
-            @FormParam("endDate") String endDate,
+            @FormParam("fromDate") String fromDate,
+            @FormParam("toDate") String toDate,
             @FormParam("authorized") boolean authorized,
             @Context Request request,
             @Context UriInfo info
@@ -214,6 +175,8 @@ public class CommitmentResource {
         commitment.setResident(residentFacade.find(residentId));
         commitment.setRole(role);
         commitment.setAuthorized(authorized);
+        commitment.setFromDate(Utility.parseStringToDate(fromDate));
+        commitment.setToDate(Utility.parseStringToDate(toDate));
         commitment = commitmentFacade.edit(commitment);
         CommitmentDTO commitmentDTO = Utility.convertCommitmentToDTO(commitment);
         commitmentDTO.setLink(Utility.getLinkToSelf(commitmentDTO.getId(), info));
@@ -246,7 +209,7 @@ public class CommitmentResource {
 
         commitmentFacade.remove(commitment);
         CommitmentDTO commitmentDTO = Utility.convertCommitmentToDTO(commitment);
-        commitmentDTO.setLink(Utility.getLinkToResource(commitment.getId(), info, "parent"));
+        commitmentDTO.setLink(Utility.getLinkToResource(commitment.getId(), info));
         return Response.ok(commitment).build();
     }
 }

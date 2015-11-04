@@ -1,7 +1,7 @@
 CREATE TABLE Address(
 id INTEGER PRIMARY KEY AUTO_INCREMENT,
 city VARCHAR(40),
-streetName VARCHAR(50),
+streetName VARCHAR(11) NOT NULL,
 streetNumber VARCHAR(5)
 );
 

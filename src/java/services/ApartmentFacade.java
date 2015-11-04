@@ -4,6 +4,7 @@ import entities.Apartment;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 
 /**
  *
@@ -21,6 +22,13 @@ public class ApartmentFacade extends AbstractFacade<Apartment> implements Apartm
 
     public ApartmentFacade() {
         super(Apartment.class);
+    }
+
+    @Override
+    public int getAreaCount() {
+
+        TypedQuery q = em.createNamedQuery("Apartment.countArea", Apartment.class);
+        
     }
     
 }

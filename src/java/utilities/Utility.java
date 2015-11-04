@@ -69,12 +69,12 @@ public class Utility {
         return new Link(uri, "self");
     }
 
-    public static Link getLinkToResource(int entityId, UriInfo info, String rel) {
+    public static Link getLinkToResource(int entityId, UriInfo info) {
         String uri = info.getAbsolutePathBuilder().build().toString();
-        return new Link(uri, rel);
+        return new Link(uri, "parent");
     }
 
-    public Link getLinkToSubresource(int entityId, UriInfo info, String rel) {
+    public Link getLinkToSubresource(int entityId, UriInfo info) {
         String uri = info.getAbsolutePathBuilder().build().toString();
         return new Link(uri, "child");
     }

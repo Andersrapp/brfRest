@@ -29,8 +29,7 @@ public abstract class AbstractFacade<T> {
     }
 
     public void remove(T entity) {
-        Object ref = getEntityManager().getReference(entityClass, entity);
-        getEntityManager().remove(ref);
+        getEntityManager().remove(getEntityManager().merge(entity));
     }
 
     @SuppressWarnings("unchecked")
