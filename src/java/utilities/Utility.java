@@ -74,7 +74,7 @@ public class Utility {
         return new Link(uri, "parent");
     }
 
-    public Link getLinkToSubresource(int entityId, UriInfo info) {
+    public static Link getLinkToSubresource(int entityId, UriInfo info) {
         String uri = info.getAbsolutePathBuilder().build().toString();
         return new Link(uri, "child");
     }
