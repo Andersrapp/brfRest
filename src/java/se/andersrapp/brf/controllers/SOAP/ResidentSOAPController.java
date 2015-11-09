@@ -12,7 +12,7 @@ import se.andersrapp.brf.services.ResidentFacadeLocal;
  *
  * @author Anders
  */
-@WebService(name = "ResidentControll", serviceName = "ResidentService", portName = "ResidentPort")
+@WebService(name = "ResidentSOAPController")
 public class ResidentSOAPController {
 
     @EJB
