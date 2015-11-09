@@ -1,6 +1,7 @@
 package se.andersrapp.brf.entities;
 
 import java.io.Serializable;
+import java.util.Objects;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -101,23 +102,43 @@ public class ContactInformation implements Serializable {
 
     @Override
     public int hashCode() {
-        int hash = 0;
-        hash += (residentId != null ? residentId.hashCode() : 0);
+        int hash = 7;
+        hash = 83 * hash + Objects.hashCode(this.residentId);
+        hash = 83 * hash + Objects.hashCode(this.telephone);
+        hash = 83 * hash + Objects.hashCode(this.email);
+        hash = 83 * hash + Objects.hashCode(this.resident);
+        hash = 83 * hash + Objects.hashCode(this.link);
         return hash;
     }
 
     @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof ContactInformation)) {
+    public boolean equals(Object obj) {
+        if (obj == null) {
             return false;
         }
-        ContactInformation other = (ContactInformation) object;
-        if ((this.residentId == null && other.residentId != null) || (this.residentId != null && !this.residentId.equals(other.residentId))) {
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final ContactInformation other = (ContactInformation) obj;
+        if (!Objects.equals(this.residentId, other.residentId)) {
+            return false;
+        }
+        if (!Objects.equals(this.telephone, other.telephone)) {
+            return false;
+        }
+        if (!Objects.equals(this.email, other.email)) {
+            return false;
+        }
+        if (!Objects.equals(this.resident, other.resident)) {
+            return false;
+        }
+        if (!Objects.equals(this.link, other.link)) {
             return false;
         }
         return true;
     }
+
+
 
     @Override
     public String toString() {

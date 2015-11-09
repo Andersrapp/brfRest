@@ -4,7 +4,6 @@ import se.andersrapp.brf.entities.Address;
 import se.andersrapp.brf.exception.DataNotFoundException;
 import java.util.List;
 import javax.ejb.EJB;
-import javax.validation.constraints.Pattern;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -52,10 +51,9 @@ public class AddressController {
         cc.setPrivate(true);
         int hashValue = 0;
         for (Address address : addresses) {
-            hashValue += address.hashCode();
             address.setLink(Utility.getLinkToSelf(address.getId(), info));
         }
-        EntityTag eTag = new EntityTag(Integer.toString(hashValue));
+        EntityTag eTag = new EntityTag(Integer.toString(addresses.hashCode()));
 
         ResponseBuilder builder = request.evaluatePreconditions(eTag);
         GenericEntity<List<Address>> addressesEntity = new GenericEntity<List<Address>>(addresses) {

@@ -2,6 +2,7 @@ package se.andersrapp.brf.dtos;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.Objects;
 import se.andersrapp.brf.entities.Link;
 import se.andersrapp.brf.entities.Resident;
 
@@ -9,7 +10,7 @@ import se.andersrapp.brf.entities.Resident;
  *
  * @author Anders
  */
-public class CommitmentDTO implements Serializable{
+public class CommitmentDTO implements Serializable {
 
     private Integer id;
     private String role;
@@ -73,6 +74,52 @@ public class CommitmentDTO implements Serializable{
 
     public void setLink(Link link) {
         this.link = link;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 29 * hash + Objects.hashCode(this.id);
+        hash = 29 * hash + Objects.hashCode(this.role);
+        hash = 29 * hash + Objects.hashCode(this.fromDate);
+        hash = 29 * hash + Objects.hashCode(this.toDate);
+        hash = 29 * hash + Objects.hashCode(this.resident);
+        hash = 29 * hash + Objects.hashCode(this.authorized);
+        hash = 29 * hash + Objects.hashCode(this.link);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final CommitmentDTO other = (CommitmentDTO) obj;
+        if (!Objects.equals(this.id, other.id)) {
+            return false;
+        }
+        if (!Objects.equals(this.role, other.role)) {
+            return false;
+        }
+        if (!Objects.equals(this.fromDate, other.fromDate)) {
+            return false;
+        }
+        if (!Objects.equals(this.toDate, other.toDate)) {
+            return false;
+        }
+        if (!Objects.equals(this.resident, other.resident)) {
+            return false;
+        }
+        if (!Objects.equals(this.authorized, other.authorized)) {
+            return false;
+        }
+        if (!Objects.equals(this.link, other.link)) {
+            return false;
+        }
+        return true;
     }
 
 }

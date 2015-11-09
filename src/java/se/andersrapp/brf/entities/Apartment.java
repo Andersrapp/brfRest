@@ -1,6 +1,7 @@
 package se.andersrapp.brf.entities;
 
 import java.io.Serializable;
+import java.util.Objects;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -57,8 +58,6 @@ public class Apartment implements Serializable {
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Column(name = "share")
     private Float share;
-//    @OneToMany(cascade = CascadeType.ALL, mappedBy = "apartment")
-//    private List<Residency> residencyList;
     @JoinColumn(name = "address", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Address address;
@@ -144,24 +143,54 @@ public class Apartment implements Serializable {
 
     @Override
     public int hashCode() {
-        int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
+        int hash = 5;
+        hash = 97 * hash + Objects.hashCode(this.id);
+        hash = 97 * hash + this.apartmentNumber;
+        hash = 97 * hash + Objects.hashCode(this.roomCount);
+        hash = 97 * hash + this.area;
+        hash = 97 * hash + Objects.hashCode(this.floorCode);
+        hash = 97 * hash + Objects.hashCode(this.share);
+        hash = 97 * hash + Objects.hashCode(this.address);
+        hash = 97 * hash + Objects.hashCode(this.link);
         return hash;
     }
 
     @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Apartment)) {
+    public boolean equals(Object obj) {
+        if (obj == null) {
             return false;
         }
-        Apartment other = (Apartment) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Apartment other = (Apartment) obj;
+        if (!Objects.equals(this.id, other.id)) {
+            return false;
+        }
+        if (this.apartmentNumber != other.apartmentNumber) {
+            return false;
+        }
+        if (!Objects.equals(this.roomCount, other.roomCount)) {
+            return false;
+        }
+        if (this.area != other.area) {
+            return false;
+        }
+        if (!Objects.equals(this.floorCode, other.floorCode)) {
+            return false;
+        }
+        if (!Objects.equals(this.share, other.share)) {
+            return false;
+        }
+        if (!Objects.equals(this.address, other.address)) {
+            return false;
+        }
+        if (!Objects.equals(this.link, other.link)) {
             return false;
         }
         return true;
     }
-
+    
     @Override
     public String toString() {
         return "entities.Apartment[ id=" + id + " ]";

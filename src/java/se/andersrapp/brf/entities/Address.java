@@ -1,6 +1,7 @@
 package se.andersrapp.brf.entities;
 
 import java.io.Serializable;
+import java.util.Objects;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -44,8 +45,6 @@ public class Address implements Serializable {
     @Size(max = 5)
     @Column(name = "streetNumber")
     private String streetNumber;
-//    @OneToMany(cascade = CascadeType.ALL, mappedBy = "address")
-//    private List<Apartment> apartmentList;
     @Transient
     private Link link;
 
@@ -88,14 +87,6 @@ public class Address implements Serializable {
         this.streetNumber = streetNumber;
     }
 
-//    @XmlTransient
-//    public List<Apartment> getApartmentList() {
-//        return apartmentList;
-//    }
-//
-//    public void setApartmentList(List<Apartment> apartmentList) {
-//        this.apartmentList = apartmentList;
-//    }
     public Link getLink() {
         return link;
     }
@@ -104,21 +95,45 @@ public class Address implements Serializable {
         this.link = link;
     }
 
+//    @Override
+//    public int hashCode() {
+//        int hash = 0;
+//        hash += (id != null ? id.hashCode() : 0);
+//        return hash;
+//    }
     @Override
     public int hashCode() {
-        int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
+        int hash = 7;
+        hash = 97 * hash + Objects.hashCode(this.id);
+        hash = 97 * hash + Objects.hashCode(this.city);
+        hash = 97 * hash + Objects.hashCode(this.streetName);
+        hash = 97 * hash + Objects.hashCode(this.streetNumber);
+        hash = 97 * hash + Objects.hashCode(this.link);
         return hash;
     }
 
     @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Address)) {
+    public boolean equals(Object obj) {
+        if (obj == null) {
             return false;
         }
-        Address other = (Address) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Address other = (Address) obj;
+        if (!Objects.equals(this.id, other.id)) {
+            return false;
+        }
+        if (!Objects.equals(this.city, other.city)) {
+            return false;
+        }
+        if (!Objects.equals(this.streetName, other.streetName)) {
+            return false;
+        }
+        if (!Objects.equals(this.streetNumber, other.streetNumber)) {
+            return false;
+        }
+        if (!Objects.equals(this.link, other.link)) {
             return false;
         }
         return true;

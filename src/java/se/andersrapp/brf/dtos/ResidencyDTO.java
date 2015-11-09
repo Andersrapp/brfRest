@@ -2,6 +2,7 @@ package se.andersrapp.brf.dtos;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.Objects;
 import se.andersrapp.brf.entities.Apartment;
 import se.andersrapp.brf.entities.Link;
 import se.andersrapp.brf.entities.Resident;
@@ -65,5 +66,47 @@ public class ResidencyDTO implements Serializable{
 
     public void setLink(Link link) {
         this.link = link;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 97 * hash + Objects.hashCode(this.id);
+        hash = 97 * hash + Objects.hashCode(this.fromDate);
+        hash = 97 * hash + Objects.hashCode(this.toDate);
+        hash = 97 * hash + Objects.hashCode(this.apartment);
+        hash = 97 * hash + Objects.hashCode(this.resident);
+        hash = 97 * hash + Objects.hashCode(this.link);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final ResidencyDTO other = (ResidencyDTO) obj;
+        if (!Objects.equals(this.id, other.id)) {
+            return false;
+        }
+        if (!Objects.equals(this.fromDate, other.fromDate)) {
+            return false;
+        }
+        if (!Objects.equals(this.toDate, other.toDate)) {
+            return false;
+        }
+        if (!Objects.equals(this.apartment, other.apartment)) {
+            return false;
+        }
+        if (!Objects.equals(this.resident, other.resident)) {
+            return false;
+        }
+        if (!Objects.equals(this.link, other.link)) {
+            return false;
+        }
+        return true;
     }
 }

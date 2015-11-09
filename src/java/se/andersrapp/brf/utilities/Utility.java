@@ -64,7 +64,7 @@ public class Utility {
     }
 
     public static Link getLinkToSelf(int entityId, UriInfo info) {
-        String uri = info.getAbsolutePathBuilder().build().toString();
+        String uri = info.getAbsolutePathBuilder().path(Integer.toString(entityId)).build().toString();
         return new Link(uri, "self");
     }
 

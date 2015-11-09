@@ -1,9 +1,8 @@
 package se.andersrapp.brf.entities;
 
 import java.io.Serializable;
-import java.util.List;
+import java.util.Objects;
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -11,12 +10,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -47,12 +44,6 @@ public class Resident implements Serializable {
     @Size(max = 20)
     @Column(name = "lastName")
     private String lastName;
-//    @OneToMany(cascade = CascadeType.ALL, mappedBy = "resident")
-//    private List<Residency> residencyList;
-//    @OneToMany(mappedBy = "resident")
-//    private List<Commitment> commitmentList;
-//    @OneToOne(cascade = CascadeType.ALL, mappedBy = "resident")
-//    private ContactInformation contactinformation;
     @Transient
     private Link link;
 
@@ -94,24 +85,6 @@ public class Resident implements Serializable {
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
-//
-//    @XmlTransient
-//    public List<Residency> getResidencyList() {
-//        return residencyList;
-//    }
-//
-//    public void setResidencyList(List<Residency> residencyList) {
-//        this.residencyList = residencyList;
-//    }
-//
-//    @XmlTransient
-//    public List<Commitment> getCommitmentList() {
-//        return commitmentList;
-//    }
-//
-//    public void setCommitmentList(List<Commitment> commitmentList) {
-//        this.commitmentList = commitmentList;
-//    }
 
     public Link getLink() {
         return link;
@@ -120,30 +93,40 @@ public class Resident implements Serializable {
     public void setLink(Link link) {
         this.link = link;
     }
-    
-//    public ContactInformation getContactinformation() {
-//        return contactinformation;
-//    }
-//
-//    public void setContactinformation(ContactInformation contactinformation) {
-//        this.contactinformation = contactinformation;
-//    }
 
     @Override
     public int hashCode() {
-        int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
+        int hash = 3;
+        hash = 11 * hash + Objects.hashCode(this.id);
+        hash = 11 * hash + Objects.hashCode(this.ssn);
+        hash = 11 * hash + Objects.hashCode(this.firstName);
+        hash = 11 * hash + Objects.hashCode(this.lastName);
+        hash = 11 * hash + Objects.hashCode(this.link);
         return hash;
     }
 
     @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Resident)) {
+    public boolean equals(Object obj) {
+        if (obj == null) {
             return false;
         }
-        Resident other = (Resident) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Resident other = (Resident) obj;
+        if (!Objects.equals(this.id, other.id)) {
+            return false;
+        }
+        if (!Objects.equals(this.ssn, other.ssn)) {
+            return false;
+        }
+        if (!Objects.equals(this.firstName, other.firstName)) {
+            return false;
+        }
+        if (!Objects.equals(this.lastName, other.lastName)) {
+            return false;
+        }
+        if (!Objects.equals(this.link, other.link)) {
             return false;
         }
         return true;
