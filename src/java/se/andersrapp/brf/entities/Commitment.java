@@ -132,6 +132,50 @@ public class Commitment implements Serializable {
     }
 
     @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 37 * hash + Objects.hashCode(this.id);
+        hash = 37 * hash + Objects.hashCode(this.role);
+        hash = 37 * hash + Objects.hashCode(this.fromDate);
+        hash = 37 * hash + Objects.hashCode(this.toDate);
+        hash = 37 * hash + (this.authorized ? 1 : 0);
+        hash = 37 * hash + Objects.hashCode(this.resident);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Commitment other = (Commitment) obj;
+        if (!Objects.equals(this.id, other.id)) {
+            return false;
+        }
+        if (!Objects.equals(this.role, other.role)) {
+            return false;
+        }
+        if (!Objects.equals(this.fromDate, other.fromDate)) {
+            return false;
+        }
+        if (!Objects.equals(this.toDate, other.toDate)) {
+            return false;
+        }
+        if (this.authorized != other.authorized) {
+            return false;
+        }
+        if (!Objects.equals(this.resident, other.resident)) {
+            return false;
+        }
+        return true;
+    }
+    
+    
+
+    @Override
     public String toString() {
         return "entities.Commitment[ id=" + id + " ]";
     }

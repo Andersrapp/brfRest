@@ -17,7 +17,7 @@ public class JNDIUtility {
 
     public static AddressFacadeLocal checkJNDI(AddressFacadeLocal addressFacade) {
         try {
-            String lookupName = "java:global/BrfREST/AddressFacade!services.AddressFacadeLocal";
+            String lookupName = "java:global/BrfREST/AddressFacade!se.andersrapp.brf.services.AddressFacadeLocal";
 
             addressFacade = (AddressFacadeLocal) InitialContext.doLookup(lookupName);
         } catch (NamingException e) {
@@ -28,7 +28,7 @@ public class JNDIUtility {
 
     public static ApartmentFacadeLocal checkJNDI(ApartmentFacadeLocal apartmentFacade) {
         try {
-            String lookupName = "java:global/BrfREST/ApartmentFacade!services.ApartmentFacadeLocal";
+            String lookupName = "java:global/BrfREST/ApartmentFacade!se.andersrapp.brf.services.ApartmentFacadeLocal";
             apartmentFacade = (ApartmentFacadeLocal) InitialContext.doLookup(lookupName);
         } catch (NamingException e) {
             System.out.println("EXCEPTION MESSAGE:::" + e.getMessage());
@@ -38,7 +38,7 @@ public class JNDIUtility {
 
     public static CommitmentFacadeLocal checkJNDI(CommitmentFacadeLocal commitmentFacade) {
         try {
-            String lookupName = "java:global/BrfREST/CommitmentFacade!services.CommitmentFacadeLocal";
+            String lookupName = "java:global/BrfREST/CommitmentFacade!se.andersrapp.brf.services.CommitmentFacadeLocal";
             commitmentFacade = (CommitmentFacadeLocal) InitialContext.doLookup(lookupName);
         } catch (NamingException e) {
             System.out.println("EXCEPTION MESSAGE:::" + e.getMessage());
@@ -48,7 +48,7 @@ public class JNDIUtility {
 
     public static ContactInformationFacadeLocal checkJNDI(ContactInformationFacadeLocal contactInformationFacade) {
         try {
-            String lookupName = "java:global/BrfREST/ContactInformationFacade!services.ContactInformationFacadeLocal";
+            String lookupName = "java:global/BrfREST/ContactInformationFacade!se.andersrapp.brf.services.ContactInformationFacadeLocal";
             contactInformationFacade = (ContactInformationFacadeLocal) InitialContext.doLookup(lookupName);
         } catch (NamingException e) {
             System.out.println("EXCEPTION MESSAGE:::" + e.getMessage());
@@ -58,7 +58,7 @@ public class JNDIUtility {
 
     public static ResidencyFacadeLocal checkJNDI(ResidencyFacadeLocal residencyFacade) {
         try {
-            String lookupName = "java:global/BrfREST/ResidencyFacade!services.ResidencyFacadeLocal";
+            String lookupName = "java:global/BrfREST/ResidencyFacade!se.andersrapp.brf.services.ResidencyFacadeLocal";
             residencyFacade = (ResidencyFacadeLocal) InitialContext.doLookup(lookupName);
         } catch (NamingException e) {
             System.out.println("EXCEPTION MESSAGE:::" + e.getMessage());
@@ -68,7 +68,7 @@ public class JNDIUtility {
 
     public static ResidentFacadeLocal checkJNDI(ResidentFacadeLocal residentFacade) {
         try {
-            String lookupName = "java:global/BrfREST/ResidentFacade!services.ResidentFacadeLocal";
+            String lookupName = "java:global/BrfREST/ResidentFacade!se.andersrapp.brf.services.ResidentFacadeLocal";
             residentFacade = (ResidentFacadeLocal) InitialContext.doLookup(lookupName);
         } catch (NamingException e) {
             System.out.println("EXCEPTION MESSAGE:::" + e.getMessage());

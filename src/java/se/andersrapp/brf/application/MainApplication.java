@@ -7,7 +7,7 @@ import javax.ws.rs.core.Application;
  *
  * @author Anders
  */
-//@ApplicationPath("api")
+@ApplicationPath("api")
 public class MainApplication extends Application{
     
 }
