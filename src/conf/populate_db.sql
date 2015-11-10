@@ -39,18 +39,6 @@ INSERT INTO Resident(ssn, `firstName`, `lastName`)
 VALUES("196006069666", "James", "Hetfield");
 
 
-
-INSERT INTO ContactInformation(residentId, telephone, email)
-VALUES(1, "+46703305805", "anders.rapp@gmail.com");
-
-INSERT INTO ContactInformation(residentId, telephone, email)
-VALUES(2, "+46706893068", "kristina.rapp@gmail.com");
-
-INSERT INTO ContactInformation(residentId, telephone, email)
-VALUES(3, "+1 8547452321", "james.hetfield@metallica.com");
-
-
-
 INSERT INTO Apartment(`apartmentNumber`, address, `roomCount`, area, `floorCode`, share)
 VALUES(56, 6, 3, 74, 1201, 3.2);
 

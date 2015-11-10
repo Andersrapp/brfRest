@@ -24,13 +24,6 @@ firstName VARCHAR(20),
 lastName VARCHAR(20)
 );
 
-CREATE TABLE ContactInformation(
-residentId INTEGER PRIMARY KEY,
-telephone VARCHAR(30),
-email VARCHAR(50),
-CONSTRAINT fk_resident FOREIGN KEY(residentId) REFERENCES Resident(id)
-);
-
 CREATE TABLE Residency(
 id INTEGER PRIMARY KEY AUTO_INCREMENT,
 apartment INTEGER,

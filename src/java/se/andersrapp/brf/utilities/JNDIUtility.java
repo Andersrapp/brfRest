@@ -5,7 +5,6 @@ import javax.naming.NamingException;
 import se.andersrapp.brf.services.AddressFacadeLocal;
 import se.andersrapp.brf.services.ApartmentFacadeLocal;
 import se.andersrapp.brf.services.CommitmentFacadeLocal;
-import se.andersrapp.brf.services.ContactInformationFacadeLocal;
 import se.andersrapp.brf.services.ResidencyFacadeLocal;
 import se.andersrapp.brf.services.ResidentFacadeLocal;
 
@@ -44,16 +43,6 @@ public class JNDIUtility {
             System.out.println("EXCEPTION MESSAGE:::" + e.getMessage());
         }
         return commitmentFacade;
-    }
-
-    public static ContactInformationFacadeLocal checkJNDI(ContactInformationFacadeLocal contactInformationFacade) {
-        try {
-            String lookupName = "java:global/BrfREST/ContactInformationFacade!se.andersrapp.brf.services.ContactInformationFacadeLocal";
-            contactInformationFacade = (ContactInformationFacadeLocal) InitialContext.doLookup(lookupName);
-        } catch (NamingException e) {
-            System.out.println("EXCEPTION MESSAGE:::" + e.getMessage());
-        }
-        return contactInformationFacade;
     }
 
     public static ResidencyFacadeLocal checkJNDI(ResidencyFacadeLocal residencyFacade) {
