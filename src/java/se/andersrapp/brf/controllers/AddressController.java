@@ -4,7 +4,6 @@ import se.andersrapp.brf.entities.Address;
 import se.andersrapp.brf.exception.DataNotFoundException;
 import java.util.List;
 import javax.ejb.EJB;
-import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -102,7 +101,6 @@ public class AddressController {
     }
 
     @POST
-    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_FORM_URLENCODED})
     @Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
     public Response createAddress(
             @FormParam("city") String city,
@@ -156,10 +154,11 @@ public class AddressController {
             @Context Request request
     ) {
         Address address = addressFacade.find(addressId);
+        System.out.println(city.equalsIgnoreCase("Gothenburg"));
         if (address == null) {
             throw new DataNotFoundException("Address with id: " + addressId + " is not found!");
         }
-        if (!"Gothenburg".equalsIgnoreCase(city.trim()) || !"Göteborg".equalsIgnoreCase(city.trim())) {
+        if (!"Gothenburg".equalsIgnoreCase(city.trim())) {
             throw new WrongInputException("Correct input is missing. City must be specified as: \"Gothenburg\"");
         }
 
