@@ -2,13 +2,14 @@ CREATE TABLE Address(
 id INTEGER PRIMARY KEY AUTO_INCREMENT,
 city VARCHAR(40),
 streetName VARCHAR(11) NOT NULL,
-streetNumber VARCHAR(5)
+streetNumber VARCHAR(2),
+UNIQUE KEY `uniqe_index`(streetName, streetNumber)
 );
 
 CREATE TABLE Apartment(
 id INTEGER PRIMARY KEY AUTO_INCREMENT,
 apartmentNumber INTEGER NOT NULL UNIQUE,
-address INTEGER NOT NULL,
+address INTEGER,
 roomCount INTEGER,
 area INTEGER NOT NULL,
 floorCode INTEGER,
@@ -32,8 +33,8 @@ CONSTRAINT fk_resident FOREIGN KEY(residentId) REFERENCES Resident(id)
 
 CREATE TABLE Residency(
 id INTEGER PRIMARY KEY AUTO_INCREMENT,
-apartment INTEGER NOT NULL,
-resident INTEGER NOT NULL,
+apartment INTEGER,
+resident INTEGER,
 fromDate DATE NOT NULL,
 toDate DATE,
 CONSTRAINT fk_residency_apartment FOREIGN KEY(apartment) REFERENCES Apartment(id),

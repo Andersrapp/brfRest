@@ -1,11 +1,8 @@
 package se.andersrapp.brf.controllers;
 
-import se.andersrapp.brf.dtos.ResidencyDTO;
 import se.andersrapp.brf.entities.Address;
 import se.andersrapp.brf.entities.Apartment;
-import se.andersrapp.brf.entities.Residency;
 import se.andersrapp.brf.exception.DataNotFoundException;
-import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ws.rs.Consumes;
@@ -27,6 +24,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
+import se.andersrapp.brf.entities.Residency;
 import se.andersrapp.brf.services.AddressFacadeLocal;
 import se.andersrapp.brf.services.ApartmentFacadeLocal;
 import se.andersrapp.brf.services.ResidencyFacadeLocal;
@@ -192,14 +190,22 @@ public class ApartmentController {
     @DELETE
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{apartmentId: \\d+}")
-    public void deleteApartment(
+    public Response deleteApartment(
             @PathParam("apartmentId") int apartmentId
     ) {
         Apartment apartment = apartmentFacade.find(apartmentId);
         if (apartment == null) {
             throw new DataNotFoundException("Apartment with id: " + apartmentId + " is not found!");
         }
+        List<Residency> residenciesInApartment = residencyFacade.findResidenciesWithApartmentId(apartment.getId());
+        for (Residency residency : residenciesInApartment) {
+            residency.setApartment(null);
+            residencyFacade.edit(residency);
+        }
+
         apartmentFacade.remove(apartment);
+
+        return Response.ok(apartment).build();
     }
 
     @Path("{parentResourceId: \\d+}/residencies")
@@ -209,13 +215,13 @@ public class ApartmentController {
     }
 
     public float updateShareNumbers(int apartmentArea) {
-        int areaCount = apartmentFacade.getAreaCount();
+        long areaCount = apartmentFacade.getAreaCount();
         List<Apartment> apartments = apartmentFacade.findAll();
-        float share;
+        float share = 0;
         for (Apartment apartment : apartments) {
             share = (float) apartment.getArea() / areaCount;
             apartment.setShare(share);
         }
-        return 0;
+        return share;
     }
 }

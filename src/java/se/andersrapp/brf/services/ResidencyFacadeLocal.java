@@ -29,8 +29,10 @@ public interface ResidencyFacadeLocal {
 
     Residency findOneApartmentResidency(int apartmentId, int residencyId);
 
-    List<Residency> findResidentResidencies(int residentId);
+    List<Residency> findResidenciesByResident(int residentId);
 
     Residency findOneResidentResidency(int residencyId, int residentId);
+    
+    List<Residency> findResidenciesWithApartmentId(int apartmentId);
 
 }

@@ -209,7 +209,6 @@ public class CommitmentController {
 
         commitmentFacade.remove(commitment);
         CommitmentDTO commitmentDTO = Utility.convertCommitmentToDTO(commitment);
-        commitmentDTO.setLink(Utility.getLinkToResource(commitment.getId(), info));
         return Response.ok(commitment).build();
     }
 }

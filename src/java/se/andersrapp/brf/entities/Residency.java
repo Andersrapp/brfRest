@@ -37,7 +37,9 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Residency.findResidenciesByResident",
             query = "SELECT r FROM Residency r WHERE r.resident.id = :residentId"),
     @NamedQuery(name = "Residency.findOneResidentResidency",
-            query = "SELECT r FROM Residency r WHERE r.id = :residencyId AND r.resident.id = :residentId")
+            query = "SELECT r FROM Residency r WHERE r.id = :residencyId AND r.resident.id = :residentId"),
+    @NamedQuery(name = "Residency.getResidenciesWithApartmentId",
+            query = "SELECT r FROM Residency r WHERE r.apartment.id= :apartmentId")
 
 })
 public class Residency implements Serializable {
@@ -57,10 +59,8 @@ public class Residency implements Serializable {
     @Temporal(TemporalType.DATE)
     private Date toDate;
     @JoinColumn(name = "apartment", referencedColumnName = "id")
-    @ManyToOne(optional = false)
     private Apartment apartment;
     @JoinColumn(name = "resident", referencedColumnName = "id")
-    @ManyToOne(optional = false)
     private Resident resident;
 
     public Residency() {

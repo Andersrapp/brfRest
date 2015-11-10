@@ -4,7 +4,7 @@ import se.andersrapp.brf.entities.Commitment;
 import se.andersrapp.brf.entities.ContactInformation;
 import se.andersrapp.brf.entities.Resident;
 import se.andersrapp.brf.exception.DataNotFoundException;
-import se.andersrapp.brf.exception.InputNotDetectedException;
+import se.andersrapp.brf.exception.WrongInputException;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ws.rs.Consumes;
@@ -25,6 +25,7 @@ import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.UriInfo;
+import org.jboss.weld.event.Status;
 import se.andersrapp.brf.services.AddressFacadeLocal;
 import se.andersrapp.brf.services.ApartmentFacadeLocal;
 import se.andersrapp.brf.services.CommitmentFacadeLocal;
@@ -125,7 +126,7 @@ public class ResidentController {
             @Context Request request
     ) {
         if (ssn == null) {
-            throw new InputNotDetectedException("Social Security Number is missing!");
+            throw new WrongInputException("Social Security Number is missing!");
         }
         Resident resident = new Resident();
         resident.setSsn(ssn);
@@ -185,7 +186,7 @@ public class ResidentController {
     @DELETE
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{residentId: \\d+}")
-    public void deleteResident(
+    public Response deleteResident(
             @PathParam("residentId") int residentId,
             @Context Request request
     ) {
@@ -197,7 +198,9 @@ public class ResidentController {
         ContactInformation contactInformation = contactInformationFacade.findResidentContactinformation(residentId);
         contactInformationFacade.remove(contactInformation);
         residentFacade.remove(resident);
-
+        
+        return Response.ok().build();
+        
     }
 
     @Path("{parentResourceId: \\d+}/residencies")

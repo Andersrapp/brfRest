@@ -68,8 +68,8 @@ public class Utility {
         return new Link(uri, "self");
     }
 
-    public static Link getLinkToResource(int entityId, UriInfo info) {
-        String uri = info.getAbsolutePathBuilder().build().toString();
+    public static Link getLinkToResource(UriInfo info) {
+        String uri = info.getAbsolutePath().toString();
         return new Link(uri, "parent");
     }
 

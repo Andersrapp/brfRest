@@ -4,6 +4,7 @@ import se.andersrapp.brf.entities.Address;
 import se.andersrapp.brf.exception.DataNotFoundException;
 import java.util.List;
 import javax.ejb.EJB;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -21,7 +22,10 @@ import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.UriInfo;
+import se.andersrapp.brf.entities.Apartment;
+import se.andersrapp.brf.exception.WrongInputException;
 import se.andersrapp.brf.services.AddressFacadeLocal;
+import se.andersrapp.brf.services.ApartmentFacadeLocal;
 import se.andersrapp.brf.utilities.Utility;
 
 /**
@@ -37,6 +41,9 @@ public class AddressController {
     @EJB
     AddressFacadeLocal addressFacade;
 
+    @EJB
+    ApartmentFacadeLocal apartmentFacade;
+
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAddresses(
@@ -49,7 +56,6 @@ public class AddressController {
         CacheControl cc = new CacheControl();
         cc.setMaxAge(86400);
         cc.setPrivate(true);
-        int hashValue = 0;
         for (Address address : addresses) {
             address.setLink(Utility.getLinkToSelf(address.getId(), info));
         }
@@ -96,7 +102,8 @@ public class AddressController {
     }
 
     @POST
-    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_FORM_URLENCODED})
+    @Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
     public Response createAddress(
             @FormParam("city") String city,
             @FormParam("streetName") String streetName,
@@ -104,11 +111,21 @@ public class AddressController {
             @Context Request request
     ) {
         Address address = new Address();
-        address.setCity(city);
-        if (!"Waernsgatan".equalsIgnoreCase(streetName.trim())) {
-            return Response.notModified("Address incorrect. Must be \"Waernsgatan\"").build();
+        if (!"Gothenburg".equalsIgnoreCase(city.trim())) {
+            throw new WrongInputException("Correct input is missing. City must be specified as: \"Gothenburg\"");
         }
-        address.setStreetName("Waernsgatan");
+        address.setCity(city);
+
+        if (!"Waernsgatan".equalsIgnoreCase(streetName.trim())) {
+            throw new WrongInputException("Correct input is missing. Address must be specified as: \"Waernsgatan\"");
+        }
+        address.setStreetName(streetName);
+
+        if (streetNumber.trim().length() != 2 || !streetNumber.trim().matches("[135][ABC]")) {
+            throw new WrongInputException(
+                    "Correct input is missing. StreetNumber must be specified like: \"1A\", starting with one digit 1, 3 or 5 and ending with one letter A, B or C");
+        }
+
         address.setStreetNumber(streetNumber);
 
         address = addressFacade.create(address);
@@ -142,8 +159,17 @@ public class AddressController {
         if (address == null) {
             throw new DataNotFoundException("Address with id: " + addressId + " is not found!");
         }
-        if ("Gothenburg".equalsIgnoreCase(city.trim())) {
-            return Response.notModified("City name must be Gothenburg").build();
+        if (!"Gothenburg".equalsIgnoreCase(city.trim()) || !"Göteborg".equalsIgnoreCase(city.trim())) {
+            throw new WrongInputException("Correct input is missing. City must be specified as: \"Gothenburg\"");
+        }
+
+        if (!"Waernsgatan".equals(streetName)) {
+            throw new WrongInputException("Correct input is missing. Address must be specified as: \"Waernsgatan\"");
+        }
+
+        if (streetNumber.trim().length() != 2 || !streetNumber.trim().matches("[135][ABC]")) {
+            throw new WrongInputException(
+                    "Correct input is missing. StreetNumber must be specified like: \"1A\", starting with one digit 1, 3 or 5 and ending with one letter A, B or C");
         }
 
         address.setCity(city);
@@ -152,9 +178,6 @@ public class AddressController {
         address = addressFacade.edit(address);
         if (address == null) {
             throw new DataNotFoundException("Address with id: " + addressId + " is not found!");
-        }
-        if (!"Waernsgatan".equals(streetName)) {
-            return Response.notModified("Address incorrect. Must be \"Waernsgatan\"").build();
         }
         address.setLink(Utility.getLinkToSelf(address.getId(), info));
         CacheControl cc = new CacheControl();
@@ -184,8 +207,14 @@ public class AddressController {
         if (address == null) {
             throw new DataNotFoundException("Address with id: " + addressId + " is not found!");
         }
+
+        List<Apartment> apartmentsOnAddress = apartmentFacade.findApartmentsWithAddressId(address.getId());
+        for (Apartment apartment : apartmentsOnAddress) {
+            apartment.setAddress(null);
+            apartmentFacade.edit(apartment);
+        }
+
         addressFacade.remove(address);
-        address.setLink(Utility.getLinkToResource(addressId, info));
         return Response.ok(address).build();
     }
 }

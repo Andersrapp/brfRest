@@ -3,6 +3,7 @@ package se.andersrapp.brf.services;
 import se.andersrapp.brf.entities.Apartment;
 import java.util.List;
 import javax.ejb.Local;
+import se.andersrapp.brf.entities.Address;
 
 /**
  *
@@ -25,6 +26,8 @@ public interface ApartmentFacadeLocal {
 
     int count();
 
-    int getAreaCount();
+    long getAreaCount();
+    
+    List<Apartment> findApartmentsWithAddressId(int addressId);
 
 }

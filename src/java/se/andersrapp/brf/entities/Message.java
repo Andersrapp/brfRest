@@ -12,7 +12,6 @@ public class Message {
     private String message;
     private int statusCode;
     private String documentationLink;
-//    private Link link;
 
     public Message() {
     }
@@ -22,12 +21,6 @@ public class Message {
         this.statusCode = statusCode;
         this.documentationLink = documentationLink;
     }
-
-//    public Message(String message, int statusCode, Link link) {
-//        this.message = message;
-//        this.statusCode = statusCode;
-//        this.link = link;
-//    }
     
     public String getMessage() {
         return message;
@@ -52,13 +45,5 @@ public class Message {
     public void setDocumentationLink(String documentationLink) {
         this.documentationLink = documentationLink;
     }
-
-//    public Link getLink() {
-//        return link;
-//    }
-//
-//    public void setLink(Link link) {
-//        this.link = link;
-//    }
 
 }

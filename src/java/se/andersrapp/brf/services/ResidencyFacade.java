@@ -42,7 +42,7 @@ public class ResidencyFacade extends AbstractFacade<Residency> implements Reside
     }
 
     @Override
-    public List<Residency> findResidentResidencies(int residentId) {
+    public List<Residency> findResidenciesByResident(int residentId) {
         TypedQuery query = em.createNamedQuery("Residency.findResidenciesByResident", Residency.class);
         query.setParameter("residentId", residentId);
         List<Residency> residencies = query.getResultList();
@@ -55,6 +55,14 @@ public class ResidencyFacade extends AbstractFacade<Residency> implements Reside
         query.setParameter("residentId", residentId).setParameter("residencyId", residencyId);
         Residency residency = (Residency) query.getSingleResult();
         return residency;
+    }
+
+    @Override
+    public List<Residency> findResidenciesWithApartmentId(int apartmentId) {
+        TypedQuery q = em.createNamedQuery("Residency.getResidenciesWithApartmentId", Residency.class);
+        q.setParameter("apartmentId", apartmentId);
+        List<Residency> residencies = q.getResultList();
+        return residencies;
     }
 
 }

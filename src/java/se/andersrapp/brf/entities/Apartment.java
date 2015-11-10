@@ -32,8 +32,8 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Apartment.findByArea", query = "SELECT a FROM Apartment a WHERE a.area = :area"),
     @NamedQuery(name = "Apartment.findByFloorCode", query = "SELECT a FROM Apartment a WHERE a.floorCode = :floorCode"),
     @NamedQuery(name = "Apartment.findByShare", query = "SELECT a FROM Apartment a WHERE a.share = :share"),
-    @NamedQuery(name = "Apartment.getAreaSum", query = "SELECT count(a.area) FROM Apartment a")
-
+    @NamedQuery(name = "Apartment.getAreaSum", query = "SELECT SUM(a.area) FROM Apartment a"),
+    @NamedQuery(name = "Apartment.getApartmentWithAddressId", query = "SELECT a FROM Apartment a WHERE a.address.id = :addressId")
 })
 public class Apartment implements Serializable {
 
@@ -59,7 +59,7 @@ public class Apartment implements Serializable {
     @Column(name = "share")
     private Float share;
     @JoinColumn(name = "address", referencedColumnName = "id")
-    @ManyToOne(optional = false)
+    @ManyToOne
     private Address address;
     @Transient
     private Link link;
@@ -190,7 +190,7 @@ public class Apartment implements Serializable {
         }
         return true;
     }
-    
+
     @Override
     public String toString() {
         return "entities.Apartment[ id=" + id + " ]";

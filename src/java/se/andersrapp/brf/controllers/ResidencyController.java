@@ -72,7 +72,7 @@ public class ResidencyController {
         String uri = info.getAbsolutePathBuilder().build().toString();
 
         if (RESIDENT_URI.equals(uri.substring(0, 43))) {
-            residencies = residencyFacade.findResidentResidencies(parentResourceId);
+            residencies = residencyFacade.findResidenciesByResident(parentResourceId);
             if (residencies.isEmpty()) {
                 throw new DataNotFoundException("Residencies for resident with id: " + parentResourceId + " is not found!");
             }
@@ -262,9 +262,16 @@ public class ResidencyController {
             @PathParam("residencyId") int residencyId
     ) {
         Residency residency = residencyFacade.findOneApartmentResidency(apartmentId, residencyId);
-        if (residency.getResident() == null && residency.getApartment() == null) {
-            residencyFacade.remove(residency);
+
+        if (residency.getResident() != null) {
+            residentFacade.remove(residency.getResident());
         }
+
+        if (residency.getApartment() != null) {
+            apartmentFacade.remove(residency.getApartment());
+        }
+        residencyFacade.remove(residency);
+
         return Response.ok().build();
     }
 }
