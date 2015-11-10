@@ -37,8 +37,8 @@ import se.andersrapp.brf.utilities.Utility;
  */
 public class ResidencyController {
 
-    private final String RESIDENT_URI = "http://localhost:8080/brfRest/api/residents";
-    private final String APARTMENT_URI = "http://localhost:8080/brfRest/api/apartments";
+    private final String RESIDENT_URI = "http://localhost:8080/BrfREST/api/residents";
+    private final String APARTMENT_URI = "http://localhost:8080/BrfREST/api/apartments";
 
     @Context
     UriInfo info;
@@ -70,13 +70,12 @@ public class ResidencyController {
     ) {
         List<Residency> residencies = new ArrayList<>();
         String uri = info.getAbsolutePath().toString();
-        
-        if (RESIDENT_URI.equals(uri.substring(0, 43))) {
+        if (RESIDENT_URI.equalsIgnoreCase(uri.substring(0, 43))) {
             residencies = residencyFacade.findResidenciesByResident(parentResourceId);
             if (residencies.isEmpty()) {
                 throw new DataNotFoundException("Residencies for resident with id: " + parentResourceId + " is not found!");
             }
-        } else if (APARTMENT_URI.equals(uri.substring(0, 44))) {
+        } else if (APARTMENT_URI.equalsIgnoreCase(uri.substring(0, 44))) {
             residencies = residencyFacade.findResidenciesByApartment(parentResourceId);
             if (residencies.isEmpty()) {
                 throw new DataNotFoundException("Residencies for apartment with id: " + parentResourceId + " is not found!");
