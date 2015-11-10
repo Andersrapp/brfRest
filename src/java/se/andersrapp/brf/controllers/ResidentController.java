@@ -1,7 +1,6 @@
 package se.andersrapp.brf.controllers;
 
 import se.andersrapp.brf.entities.Commitment;
-import se.andersrapp.brf.entities.ContactInformation;
 import se.andersrapp.brf.entities.Resident;
 import se.andersrapp.brf.exception.DataNotFoundException;
 import se.andersrapp.brf.exception.WrongInputException;
@@ -25,11 +24,10 @@ import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.UriInfo;
-import org.jboss.weld.event.Status;
+import se.andersrapp.brf.entities.Residency;
 import se.andersrapp.brf.services.AddressFacadeLocal;
 import se.andersrapp.brf.services.ApartmentFacadeLocal;
 import se.andersrapp.brf.services.CommitmentFacadeLocal;
-import se.andersrapp.brf.services.ContactInformationFacadeLocal;
 import se.andersrapp.brf.services.ResidencyFacadeLocal;
 import se.andersrapp.brf.services.ResidentFacadeLocal;
 
@@ -58,9 +56,6 @@ public class ResidentController {
     @EJB
     CommitmentFacadeLocal commitmentFacade;
 
-    @EJB
-    ContactInformationFacadeLocal contactInformationFacade;
-
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAllResidents(
@@ -86,7 +81,6 @@ public class ResidentController {
             builder = Response.ok(residentwrapper);
             builder.tag(eTag);
         }
-//        Använd ETag Header i requestet.
         builder.cacheControl(cc);
         return builder.build();
     }
@@ -95,7 +89,6 @@ public class ResidentController {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{residentId: \\d+}")
     public Response getOneResidentById(
-            //            
             @PathParam("residentId") int residentId,
             @Context Request request
     ) {
@@ -117,7 +110,6 @@ public class ResidentController {
     }
 
     @POST
-//    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
     public Response createResident(
             @FormParam("ssn") String ssn,
@@ -192,15 +184,21 @@ public class ResidentController {
     ) {
         Resident resident = residentFacade.find(residentId);
         List<Commitment> residentCommitments = commitmentFacade.findResidentCommitments(residentId);
-        for (Commitment commitment : residentCommitments) {
-            commitmentFacade.remove(commitment);
+        if (!residentCommitments.isEmpty()) {
+            for (Commitment commitment : residentCommitments) {
+                commitmentFacade.remove(commitment);
+            }
         }
-        ContactInformation contactInformation = contactInformationFacade.findResidentContactinformation(residentId);
-        contactInformationFacade.remove(contactInformation);
+        
+        List<Residency> residentResidencies = residencyFacade.findResidenciesByResident(residentId);
+        if (!residentResidencies.isEmpty()) {
+            for (Residency residency : residentResidencies) {
+                residencyFacade.remove(residency);
+            }
+        }
         residentFacade.remove(resident);
-        
+
         return Response.ok().build();
-        
     }
 
     @Path("{parentResourceId: \\d+}/residencies")
@@ -208,12 +206,6 @@ public class ResidentController {
     public ResidencyController getResidencyResource() {
         System.out.println("huh?");
         return new ResidencyController();
-    }
-
-    @Path("{residentId: \\d+}/contactinformation")
-    @Produces(MediaType.APPLICATION_JSON)
-    public ContactInformationController getContactInformationResource() {
-        return new ContactInformationController();
     }
 
     @Path("{residentId: \\d+}/commitments")
