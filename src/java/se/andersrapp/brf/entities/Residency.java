@@ -59,8 +59,10 @@ public class Residency implements Serializable {
     @Temporal(TemporalType.DATE)
     private Date toDate;
     @JoinColumn(name = "apartment", referencedColumnName = "id")
+    @ManyToOne
     private Apartment apartment;
     @JoinColumn(name = "resident", referencedColumnName = "id")
+    @ManyToOne
     private Resident resident;
 
     public Residency() {

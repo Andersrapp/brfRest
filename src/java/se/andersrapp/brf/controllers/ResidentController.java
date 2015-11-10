@@ -206,6 +206,7 @@ public class ResidentController {
     @Path("{parentResourceId: \\d+}/residencies")
     @Produces(MediaType.APPLICATION_JSON)
     public ResidencyController getResidencyResource() {
+        System.out.println("huh?");
         return new ResidencyController();
     }
 
