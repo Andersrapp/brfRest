@@ -3,11 +3,10 @@ package se.andersrapp.brf.services;
 import se.andersrapp.brf.entities.Apartment;
 import java.util.List;
 import javax.ejb.Local;
-import se.andersrapp.brf.entities.Address;
 
 /**
  *
- * @author Anders
+ * @author Anders Rapp
  */
 @Local
 public interface ApartmentFacadeLocal {

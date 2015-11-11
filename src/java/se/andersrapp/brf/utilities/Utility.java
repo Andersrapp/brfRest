@@ -14,7 +14,7 @@ import se.andersrapp.brf.entities.Residency;
 
 /**
  *
- * @author Anders
+ * @author Anders Rapp
  */
 public class Utility {
 

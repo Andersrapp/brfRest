@@ -10,7 +10,7 @@ import se.andersrapp.brf.services.ResidentFacadeLocal;
 
 /**
  *
- * @author Anders
+ * @author Anders Rapp
  */
 @WebService(name = "ResidentSOAPController")
 public class ResidentSOAPController {

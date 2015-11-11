@@ -2,7 +2,6 @@ package se.andersrapp.brf.services;
 
 import se.andersrapp.brf.entities.Residency;
 import java.util.List;
-import javax.ejb.EJBException;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -10,7 +9,7 @@ import javax.persistence.TypedQuery;
 
 /**
  *
- * @author Anders
+ * @author Anders Rapp
  */
 @Stateless
 public class ResidencyFacade extends AbstractFacade<Residency> implements ResidencyFacadeLocal {

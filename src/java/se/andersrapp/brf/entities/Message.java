@@ -4,7 +4,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
- * @author Anders
+ * @author Anders Rapp
  */
 @XmlRootElement
 public class Message {

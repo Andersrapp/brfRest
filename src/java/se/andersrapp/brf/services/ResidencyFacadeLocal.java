@@ -6,7 +6,7 @@ import javax.ejb.Local;
 
 /**
  *
- * @author Anders
+ * @author Anders Rapp
  */
 @Local
 public interface ResidencyFacadeLocal {

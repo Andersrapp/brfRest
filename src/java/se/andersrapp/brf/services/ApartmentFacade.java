@@ -5,12 +5,11 @@ import se.andersrapp.brf.entities.Apartment;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
 /**
  *
- * @author Anders
+ * @author Anders Rapp
  */
 @Stateless
 public class ApartmentFacade extends AbstractFacade<Apartment> implements ApartmentFacadeLocal {

@@ -2,7 +2,7 @@ package se.andersrapp.brf.exception;
 
 /**
  *
- * @author Anders
+ * @author Anders Rapp
  */
 public class WrongInputException extends RuntimeException {
 

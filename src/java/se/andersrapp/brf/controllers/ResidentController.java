@@ -33,7 +33,7 @@ import se.andersrapp.brf.services.ResidentFacadeLocal;
 
 /**
  *
- * @author Anders
+ * @author Anders Rapp
  */
 @Path("residents")
 public class ResidentController {

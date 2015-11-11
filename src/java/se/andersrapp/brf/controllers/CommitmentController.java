@@ -33,7 +33,7 @@ import se.andersrapp.brf.utilities.Utility;
 
 /**
  *
- * @author Anders
+ * @author Anders Rapp
  */
 @Produces(MediaType.APPLICATION_JSON)
 public class CommitmentController {

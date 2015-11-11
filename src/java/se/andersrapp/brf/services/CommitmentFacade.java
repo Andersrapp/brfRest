@@ -9,7 +9,7 @@ import javax.persistence.TypedQuery;
 
 /**
  *
- * @author Anders
+ * @author Anders Rapp
  */
 @Stateless
 public class CommitmentFacade extends AbstractFacade<Commitment> implements CommitmentFacadeLocal {

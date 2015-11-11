@@ -5,7 +5,7 @@ import java.util.Objects;
 
 /**
  *
- * @author Anders
+ * @author Anders Rapp
  */
 public class Link implements Serializable {
 

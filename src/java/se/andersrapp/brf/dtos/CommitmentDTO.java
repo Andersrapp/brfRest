@@ -8,7 +8,7 @@ import se.andersrapp.brf.entities.Resident;
 
 /**
  *
- * @author Anders
+ * @author Anders Rapp
  */
 public class CommitmentDTO implements Serializable {
 

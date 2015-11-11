@@ -29,7 +29,7 @@ import se.andersrapp.brf.utilities.Utility;
 
 /**
  *
- * @author Anders
+ * @author Anders Rapp
  */
 @Path("addresses")
 public class AddressController {

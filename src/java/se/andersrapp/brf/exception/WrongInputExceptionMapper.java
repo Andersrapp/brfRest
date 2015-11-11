@@ -8,7 +8,7 @@ import javax.ws.rs.ext.Provider;
 
 /**
  *
- * @author Anders
+ * @author Anders Rapp
  */
 @Provider
 public class WrongInputExceptionMapper implements ExceptionMapper<WrongInputException> {

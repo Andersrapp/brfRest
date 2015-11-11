@@ -5,7 +5,7 @@ import javax.ws.rs.core.Application;
 
 /**
  *
- * @author Anders
+ * @author Anders Rapp
  */
 @ApplicationPath("api")
 public class MainApplication extends Application{

@@ -7,7 +7,7 @@ import javax.persistence.PersistenceContext;
 
 /**
  *
- * @author Anders
+ * @author Anders Rapp
  */
 @Stateless
 public class ResidentFacade extends AbstractFacade<Resident> implements ResidentFacadeLocal {
