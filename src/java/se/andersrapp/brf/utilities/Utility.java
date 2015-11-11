@@ -27,12 +27,12 @@ public class Utility {
         residencyDTO.setId(residency.getId());
         residencyDTO.setApartment(residency.getApartment());
         residencyDTO.setResident(residency.getResident());
+        System.out.println(residency.getFromDate());
         residencyDTO.setFromDate(convertDateToLocalDate(residency.getFromDate()));
         Date toDate = residency.getToDate();
         if (toDate != null) {
             residencyDTO.setToDate(convertDateToLocalDate(toDate));
         }
-
         return residencyDTO;
     }
 

@@ -24,6 +24,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
+import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 import se.andersrapp.brf.services.ApartmentFacadeLocal;
 import se.andersrapp.brf.services.ResidencyFacadeLocal;
@@ -37,14 +38,8 @@ import se.andersrapp.brf.utilities.Utility;
  */
 public class ResidencyController {
 
-    private final String RESIDENT_URI = "http://localhost:8080/BrfREST/api/residents";
-    private final String APARTMENT_URI = "http://localhost:8080/BrfREST/api/apartments";
-
-    @Context
-    UriInfo info;
-
-    @Context
-    Request request;
+    private final String RESIDENT_URI = "http://localhost:8080/brfRest/api/residents";
+    private final String APARTMENT_URI = "http://localhost:8080/brfREST/api/apartments";
 
     @EJB
     ResidencyFacadeLocal residencyFacade;
@@ -109,7 +104,7 @@ public class ResidencyController {
     }
 
     @GET
-    @Path("{residencyId}")
+    @Path("{residencyId: \\d+}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getOneResidency(
             @PathParam("parentResourceId") int parentResourceId,
@@ -119,9 +114,9 @@ public class ResidencyController {
     ) {
         Residency residency = new Residency();
         String uri = info.getAbsolutePathBuilder().build().toString();
-        if (RESIDENT_URI.equals(uri.substring(0, 43))) {
-            residency = residencyFacade.findOneResidentResidency(parentResourceId, residencyId);
-        } else if (APARTMENT_URI.equals(uri.substring(0, 44))) {
+        if (RESIDENT_URI.equalsIgnoreCase(uri.substring(0, 43))) {
+            residency = residencyFacade.findOneResidentResidency(residencyId, parentResourceId);
+        } else if (APARTMENT_URI.equalsIgnoreCase(uri.substring(0, 44))) {
             residency = residencyFacade.findOneApartmentResidency(parentResourceId, residencyId);
         }
         ResidencyDTO residencyDTO = Utility.convertResidencyToDTO(residency);
@@ -151,33 +146,38 @@ public class ResidencyController {
             @PathParam("parentResourceId") int parentResourceId,
             @FormParam("subResourceId") int subResourceId,
             @FormParam("fromDate") String fromDate,
-            @FormParam("toDate") String toDate
+            @FormParam("toDate") String toDate,
+            @Context UriInfo info,
+            @Context Request request
     ) {
         Residency residency = new Residency();
-        String uri = info.getAbsolutePathBuilder().build().toString();
-        if (RESIDENT_URI.equals(uri.substring(0, 44))) {
-            residency.setApartment(apartmentFacade.find(subResourceId));
+        String uri = info.getAbsolutePath().toString();
+        if (RESIDENT_URI.equalsIgnoreCase(uri.substring(0, 43))) {
             residency.setResident(residentFacade.find(parentResourceId));
-        } else if (APARTMENT_URI.equals(uri.substring(0, 43))) {
+            residency.setApartment(apartmentFacade.find(subResourceId));
+        } else if (APARTMENT_URI.equalsIgnoreCase(uri.substring(0, 44))) {
             residency.setApartment(apartmentFacade.find(parentResourceId));
             residency.setResident(residentFacade.find(subResourceId));
+        } else {
+            return Response.notModified().build();
         }
         Date now = new Date();
         Date from;
         Date to;
-        if (fromDate != null) {
+        if (!fromDate.isEmpty()) {
             from = Utility.parseStringToDate(fromDate);
             if (!from.after(now)) {
                 residency.setFromDate(from);
             } else {
-                throw new IllegalArgumentException("From Date has to have form yyyy-MM-dd and not be after the present");
+                throw new IllegalArgumentException("From date has to have form yyyy-MM-dd and not be after the present");
             }
-            if (toDate != null) {
+            if (toDate.isEmpty()) {
+                residency.setToDate(null);
                 to = Utility.parseStringToDate(toDate);
-                if (to.after(from)) {
+                if (to.after(from) && to.before(now)) {
                     residency.setToDate(to);
                 } else {
-                    throw new IllegalArgumentException("From Date has to have form yyyy-MM-dd and not be after the present");
+                    throw new IllegalArgumentException("To date has to have form yyyy-MM-dd and not be after the present");
                 }
             }
         }
@@ -201,42 +201,49 @@ public class ResidencyController {
 
     @PUT
     @Produces(MediaType.APPLICATION_JSON)
+    @Path("{residencyId: \\d+}")
     public Response updateResidency(
             @PathParam("parentResourceId") int parentResourceId,
-            @PathParam("subResourceId") int subResourceId,
-            @FormParam("residentId") int residentId,
+            @PathParam("residencyId") int residencyId,
+            @FormParam("subResourceId") int subResourceId,
             @FormParam("fromDate") String fromDate,
-            @FormParam("toDate") String toDate
+            @FormParam("toDate") String toDate,
+            @Context UriInfo info,
+            @Context Request request
     ) {
         Residency residency = new Residency();
         String uri = info.getAbsolutePathBuilder().build().toString();
-        if (RESIDENT_URI.equals(uri.substring(0, 44))) {
-            residency.setApartment(apartmentFacade.find(subResourceId));
+        if (RESIDENT_URI.equalsIgnoreCase(uri.substring(0, 43))) {
+            residency = residencyFacade.findOneResidentResidency(residencyId, parentResourceId);
             residency.setResident(residentFacade.find(parentResourceId));
-        } else if (APARTMENT_URI.equals(uri.substring(0, 43))) {
+            residency.setApartment(apartmentFacade.find(subResourceId));
+        } else if (APARTMENT_URI.equalsIgnoreCase(uri.substring(0, 44))) {
+            residency = residencyFacade.findOneApartmentResidency(parentResourceId, residencyId);
             residency.setApartment(apartmentFacade.find(parentResourceId));
             residency.setResident(residentFacade.find(subResourceId));
+        } else {
+            return Response.status(Status.NOT_FOUND).build();
         }
         Date now = new Date();
         Date from;
         Date to;
-        if (fromDate != null) {
+        if (!fromDate.isEmpty()) {
             from = Utility.parseStringToDate(fromDate);
             if (!from.after(now)) {
                 residency.setFromDate(from);
             } else {
-                throw new IllegalArgumentException("From Date has to have form yyyy-MM-dd and not be after the present");
+                throw new IllegalArgumentException("From date has to have form yyyy-MM-dd and not be after the present");
             }
-            if (toDate != null) {
+            if (!toDate.isEmpty()) {
                 to = Utility.parseStringToDate(toDate);
-                if (to.after(from)) {
+                if (to.after(from) && to.before(now)) {
                     residency.setToDate(to);
                 } else {
-                    throw new IllegalArgumentException("From Date has to have form yyyy-MM-dd and not be after the present");
+                    throw new IllegalArgumentException("To date has to have form yyyy-MM-dd and not be after the present");
                 }
             }
         }
-        residency = residencyFacade.create(residency);
+        residency = residencyFacade.edit(residency);
         ResidencyDTO residencyDTO = Utility.convertResidencyToDTO(residency);
         residencyDTO.setLink(Utility.getLinkToSelf(subResourceId, info));
         CacheControl cc = new CacheControl();
@@ -255,20 +262,28 @@ public class ResidencyController {
     }
 
     @DELETE
-    @Path("{apartmentId: \\d+}/residencies/{residencyId: \\d+}")
+    @Path("{residencyId: \\d+}")
     public Response deleteResidency(
-            @PathParam("apartmentId") int apartmentId,
-            @PathParam("residencyId") int residencyId
+            @PathParam("parentResourceId") int parentResourceId,
+            @PathParam("residencyId") int residencyId,
+            @Context UriInfo info,
+            @Context Request request
     ) {
-        Residency residency = residencyFacade.findOneApartmentResidency(apartmentId, residencyId);
-
+        Residency residency = new Residency();
+        String uri = info.getAbsolutePath().toString();
+        if (RESIDENT_URI.equalsIgnoreCase(uri.substring(0, 43))) {
+            residency = residencyFacade.findOneResidentResidency(residencyId, parentResourceId);
+        } else if (APARTMENT_URI.equalsIgnoreCase(uri.substring(0, 44))) {
+            residency = residencyFacade.findOneApartmentResidency(parentResourceId, residencyId);
+        }
         if (residency.getResident() != null) {
-            residentFacade.remove(residency.getResident());
+            residency.setResident(null);
         }
 
         if (residency.getApartment() != null) {
-            apartmentFacade.remove(residency.getApartment());
+            residency.setApartment(null);
         }
+
         residencyFacade.remove(residency);
 
         return Response.ok().build();

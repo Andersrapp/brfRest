@@ -51,7 +51,7 @@ public class ResidencyFacade extends AbstractFacade<Residency> implements Reside
     }
 
     @Override
-    public Residency findOneResidentResidency(int residencyId, int residentId) {
+    public Residency findOneResidentResidency(int residencyId, int residentId){
         TypedQuery query = em.createNamedQuery("Residency.findOneResidentResidency", Residency.class);
         query.setParameter("residentId", residentId).setParameter("residencyId", residencyId);
         Residency residency = (Residency) query.getSingleResult();
